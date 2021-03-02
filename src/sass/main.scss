@@ -2,5 +2,4 @@
 // import vendors
 @import "vendor/toolkit";
 // import components- contains each self-contained component in its own .scss partial
-// import pages contains page-specific styling
-@import "pages/dashboard";
+@import "components/dashboard";
