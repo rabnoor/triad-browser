@@ -15,7 +15,7 @@ class Dashboard extends Component {
             loader: false,
             triadData: [],
             columns: [],
-            activeSubGenome: 'SG2'
+            activeSubGenome: 'SG1'
         }
 
     }
@@ -80,8 +80,8 @@ class Dashboard extends Component {
                             onSubGenomeChange={this.onSubGenomeChange} />
                         {triadData.length > 0 ?
                             <TriadStackedMap
-                                triadData={triadData}
-                                columns={columns} /> :
+                                subGenomes={subGenomes}
+                                triadData={triadData} /> :
                             <h2>Sorry the data file is empty.</h2>}
                     </div>}
 
