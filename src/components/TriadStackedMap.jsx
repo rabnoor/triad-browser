@@ -47,42 +47,37 @@ export default class TriadStackedMap extends Component {
                 .keys(subgroups)
                 (triadData);
 
-            // console.log(stackedData[0][0]['data']);
-            // console.log(stackedData[1][0]['data']);
-            // console.log(stackedData[2][0]['data']);
 
-            // debugger;
+            let LINEWIDTH = WIDTH / stackedData[0].length;
+            let TRACK_HEIGHT = 14;
+            let x_coord = 200;
+            let y_coord = 0;
+            for (let x = 0; x < stackedData.length; x++) {
+                for (let i = 0; i < stackedData[x].length; i++) {
+                    context.beginPath();
+                    context.lineWidth = Math.round((LINEWIDTH) * 100) / 100;
 
-            // let LINEWIDTH = WIDTH / stackedData[0].length;
-            // let TRACK_HEIGHT = 14;
-            // let x_coord = 0;
-            // let y_coord = 0;
-            // for (let x = 0; x < stackedData.length; x++) {
-            //     for (let i = 0; i < stackedData[x].length; i++) {
-            //         context.beginPath();
-            //         context.lineWidth = Math.round((LINEWIDTH) * 100) / 100;
+                    // x , y
+                    context.strokeStyle = colours[0];
+                    context.moveTo(x_coord, HEIGHT);
+                    context.lineTo(x_coord, HEIGHT - stackedData[0][i]['data']['SG1']); // DRAW SEGMENT 1
+                    context.stroke();
 
-            //         // x , y
-            //         context.strokeStyle = colours[0];
-            //         context.moveTo(x_coord, HEIGHT/2);
-            //         context.lineTo(x_coord, HEIGHT/2 - stackedData[0][i]['data']['SG1']); // DRAW SEGMENT 1
-            //         context.stroke();
+                    context.beginPath();
+                    context.strokeStyle = colours[1];
+                    context.moveTo(x_coord, HEIGHT - stackedData[0][i]['data']['SG1']); // MOVE TO HEIGHT + SG1
+                    context.lineTo(x_coord, HEIGHT - stackedData[0][i]['data']['SG1'] - stackedData[1][i]['data']['SG2']); // MOVE TO HEIGHT + SG1
+                    context.stroke();
 
-            //         context.beginPath();
-            //         context.strokeStyle = colours[1];
-            //         context.moveTo(x_coord, HEIGHT/2 - stackedData[0][i]['data']['SG1']); // MOVE TO HEIGHT + SG1
-            //         context.lineTo(x_coord, HEIGHT/2 - stackedData[0][i]['data']['SG1'] - stackedData[1][i]['data']['SG2']); // MOVE TO HEIGHT + SG1
-            //         context.stroke();
+                    context.beginPath();
+                    context.strokeStyle = colours[2];
+                    context.moveTo(x_coord, HEIGHT - stackedData[0][i]['data']['SG1'] - stackedData[1][i]['data']['SG2']); // MOVE TO HEIGHT + SG1
+                    context.lineTo(x_coord, HEIGHT - stackedData[0][i]['data']['SG1'] - stackedData[1][i]['data']['SG2'] - stackedData[2][i]['data']['SG3']); // MOVE TO HEIGHT + SG1
+                    context.stroke();
 
-            //         // context.beginPath();
-            //         // context.strokeStyle = colours[2];
-            //         // context.moveTo(x_coord, HEIGHT/2 - stackedData[0][i]['data']['SG1'] - stackedData[1][i]['data']['SG2']); // MOVE TO HEIGHT + SG1
-            //         // context.lineTo(x_coord, HEIGHT/2 - - stackedData[0][i]['data']['SG1'] - stackedData[1][i]['data']['SG2'] - stackedData[2][i]['data']['SG3']); // MOVE TO HEIGHT + SG1
-            //         // context.stroke();
-
-            //         x_coord += context.lineWidth
-            //     }
-            // }
+                    x_coord += context.lineWidth
+                }
+            }
 
             // drawLines(context, stackedData, "FFFFFF", 1);
 
