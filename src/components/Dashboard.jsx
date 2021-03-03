@@ -40,7 +40,7 @@ class Dashboard extends Component {
 
                 // processing the data
                 let lineArray = rawData.split("\n");
-                let columns = lineArray.slice(0, 1)[0].split('\t'),
+                let columns = lineArray.slice(0, 1)[0].trim().split('\t'),
                     records = lineArray.slice(1)
                         .map((d) => {
                             let lineData = d.split('\t'), tempStore = {};
@@ -50,7 +50,6 @@ class Dashboard extends Component {
                             })
                             return tempStore;
                         })
-
                 // sort the data by the default set sort key
                 let triadData = _.sortBy(records, (d) => d[activeSubGenome]);
                 // Set the data onto the state
