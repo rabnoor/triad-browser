@@ -1,7 +1,17 @@
-.view-finder-container {
+.triad-stack-container {
     margin: 10px auto;
+    position: relative;
 
-    .viewfinder {
-        margin: 10px auto;
+    .view-finder-wrapper {
+        z-index: 30;
+        position: absolute;
+    }
+
+    #view-finder-window {
+        width: 50px;
+        background-color: #4c585d36;
+        touch-action: none;
+        box-sizing: border-box;
+        border-bottom: 5px solid #1d6e90;
     }
 }

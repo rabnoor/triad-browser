@@ -5,7 +5,10 @@ import Loader from 'react-loading';
 import { getFile } from '../utils/fetchData';
 import _ from 'lodash';
 import TriadStackedMap from './TriadStackedMap';
+import TriadSubRegion from './TriadSubRegion';
 import FilterPanel from './FilterPanel';
+import { scaleLinear } from 'd3';
+import { CHART_WIDTH } from '../utils/chartConstants';
 
 class Dashboard extends Component {
 
@@ -15,9 +18,13 @@ class Dashboard extends Component {
             loader: false,
             triadData: [],
             columns: [],
-            activeSubGenome: 'SG1'
+            chromosome: 'AT1',
+            activeSubGenome: 'SG1',
+            region: {
+                start: 0,
+                end: 0,
+            },
         }
-
     }
 
     onSubGenomeChange = (event) => {
@@ -29,7 +36,7 @@ class Dashboard extends Component {
 
     componentDidMount() {
 
-        const { activeSubGenome } = this.state;
+        const { activeSubGenome, chromosome } = this.state;
 
         // Turn loader onON
         this.setState({ 'loader': true });
@@ -48,10 +55,17 @@ class Dashboard extends Component {
                                 // typecast to number 
                                 tempStore[columnName] = columnIndex == 0 ? lineData[columnIndex] : +lineData[columnIndex];
                             })
+                            // TODO deal with +10 chromosomes
+                            tempStore['chromosome'] = lineData[0].slice(0, 3);
                             return tempStore;
-                        })
+                        });
+
+
+                let recordsGroupedByChromosome = _.groupBy(records, (d) => d.chromosome);
+
+
                 // sort the data by the default set sort key
-                let triadData = _.sortBy(records, (d) => d[activeSubGenome]);
+                let triadData = _.sortBy(recordsGroupedByChromosome[chromosome], (d) => d[activeSubGenome]);
                 // Set the data onto the state
                 this.setState({ triadData, columns });
             })
@@ -63,10 +77,29 @@ class Dashboard extends Component {
 
     }
 
+    setRegionWindow = (region) => {
+        this.setState({ 'region': { ...region } })
+    }
+
     render() {
 
-        const { loader = false, triadData = [], columns = [], activeSubGenome } = this.state,
+        const { loader = false, triadData = [], columns = [], activeSubGenome, region } = this.state,
             subGenomes = [...columns.slice(1)];
+
+        const chartScale = scaleLinear()
+            .domain([0, triadData.length - 1])
+            .range([0, CHART_WIDTH]);
+
+        let { start = 0, end = 0 } = region;
+
+        if (end == 0) {
+            end = Math.round(chartScale.invert(50));
+        }
+
+        const innerTriadData = triadData.slice(start, end);
+        const innerChartScale = scaleLinear()
+            .domain([0, innerTriadData.length - 1])
+            .range([0, CHART_WIDTH]);
 
         // set the dimensions of the graph
         return (
@@ -79,10 +112,19 @@ class Dashboard extends Component {
                             subGenomes={subGenomes}
                             onSubGenomeChange={this.onSubGenomeChange} />
                         {triadData.length > 0 ?
-                            <TriadStackedMap
-                                subGenomes={subGenomes}
-                                triadData={triadData} /> :
-                            <h2>Sorry the data file is empty.</h2>}
+                            <div>
+                                <TriadStackedMap
+                                    subGenomes={subGenomes}
+                                    triadData={triadData}
+                                    chartScale={chartScale}
+                                    setRegionWindow={this.setRegionWindow} />
+                                <TriadSubRegion
+                                    subGenomes={subGenomes}
+                                    triadData={innerTriadData}
+                                    chartScale={innerChartScale}
+                                />
+                            </div>
+                            : <h2>Sorry the data file is empty.</h2>}
                     </div>}
 
             </div>
