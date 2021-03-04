@@ -42,7 +42,7 @@ class Dashboard extends Component {
         this.setState({ 'loader': true });
 
 
-        getFile('/data/AT.txt')
+        getFile('./data/AT.txt')
             .then((rawData) => {
 
                 // processing the data
