@@ -7,6 +7,7 @@ import _ from 'lodash';
 import TriadStackedMap from './TriadStackedMap';
 import TriadSubRegion from './TriadSubRegion';
 import FilterPanel from './FilterPanel';
+import TriadGenomeMap from './TriadGenomeMap'
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
 
@@ -18,7 +19,9 @@ class Dashboard extends Component {
             loader: false,
             triadData: [],
             columns: [],
-            chromosome: 'AT1',
+            genomeData: [],
+            chromosomes: [],
+            activeChromosome: 'AT1',
             activeSubGenome: 'SG1',
             region: {
                 start: 0,
@@ -28,21 +31,34 @@ class Dashboard extends Component {
     }
 
     onSubGenomeChange = (event) => {
+        const activeSubGenome = event.value,
+            triadData = _.sortBy(this.state.triadData, (d) => d[activeSubGenome]),
+            genomeData = this.state.genomeData, chromosomes = this.state.chromosomes;
 
-        const activeSubGenome = event.target.value, triadData = _.sortBy(this.state.triadData, (d) => d[activeSubGenome]);
+        _.map(chromosomes, (chromosome) => {
+            genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => d[activeSubGenome])
+        })
 
-        this.setState({ activeSubGenome, triadData });
+        this.setState({ activeSubGenome, triadData, genomeData });
+    }
+
+    onChromosomeChange = (event) => {
+        const activeChromosome = event,
+            genomeData = this.state.genomeData,
+            activeSubGenome = this.state.activeSubGenome,
+            triadData = _.sortBy(genomeData[activeChromosome], (d) => d[activeSubGenome]);
+
+        this.setState({ activeChromosome, triadData });
     }
 
     componentDidMount() {
 
-        const { activeSubGenome, chromosome } = this.state;
+        const { activeSubGenome, activeChromosome } = this.state;
 
         // Turn loader onON
         this.setState({ 'loader': true });
 
-
-        getFile('./data/AT.txt')
+        getFile('data/AT.txt')
             .then((rawData) => {
 
                 // processing the data
@@ -56,18 +72,26 @@ class Dashboard extends Component {
                                 tempStore[columnName] = columnIndex == 0 ? lineData[columnIndex] : +lineData[columnIndex];
                             })
                             // TODO deal with +10 chromosomes
-                            tempStore['chromosome'] = lineData[0].slice(0, 3);
+                            tempStore['activeChromosome'] = lineData[0].slice(0, 3);
                             return tempStore;
                         });
 
+                let genomeData = _.groupBy(records, (d) => d.activeChromosome);
 
-                let recordsGroupedByChromosome = _.groupBy(records, (d) => d.chromosome);
+                // Get the chromosome names and put into array
+                let chromosomes = _.sortBy(Object.keys(genomeData));
 
+                // Sort each array of chromosomes by the active subGenome
+                _.map(chromosomes, (chromosome) => {
+                    genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => d[activeSubGenome])
+                })
+
+                // TODO select none to not sort
 
                 // sort the data by the default set sort key
-                let triadData = _.sortBy(recordsGroupedByChromosome[chromosome], (d) => d[activeSubGenome]);
+                let triadData = _.sortBy(genomeData[activeChromosome], (d) => d[activeSubGenome]);
                 // Set the data onto the state
-                this.setState({ triadData, columns });
+                this.setState({ triadData, columns, genomeData, chromosomes });
             })
             .catch(() => {
                 alert("Sorry there was an error in fetching and parsing the file");
@@ -83,7 +107,7 @@ class Dashboard extends Component {
 
     render() {
 
-        const { loader = false, triadData = [], columns = [], activeSubGenome, region } = this.state,
+        const { loader = false, triadData = [], columns = [], genomeData = [], chromosomes = [], activeSubGenome, region } = this.state,
             subGenomes = [...columns.slice(1)];
 
         const chartScale = scaleLinear()
@@ -101,6 +125,7 @@ class Dashboard extends Component {
             .domain([0, innerTriadData.length - 1])
             .range([0, CHART_WIDTH]);
 
+
         // set the dimensions of the graph
         return (
             <div className='dashboard-root container-fluid'>
@@ -113,11 +138,19 @@ class Dashboard extends Component {
                             onSubGenomeChange={this.onSubGenomeChange} />
                         {triadData.length > 0 ?
                             <div>
+                                <TriadGenomeMap
+                                    genomeData={genomeData}
+                                    subGenomes={subGenomes}
+                                    chartScale={chartScale}
+                                    chromosomes={chromosomes}
+                                    onChromosomeChange={this.onChromosomeChange}
+                                />
                                 <TriadStackedMap
                                     subGenomes={subGenomes}
                                     triadData={triadData}
                                     chartScale={chartScale}
-                                    setRegionWindow={this.setRegionWindow} />
+                                    setRegionWindow={this.setRegionWindow}
+                                />
                                 <TriadSubRegion
                                     subGenomes={subGenomes}
                                     triadData={innerTriadData}

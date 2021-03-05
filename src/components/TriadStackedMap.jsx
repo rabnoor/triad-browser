@@ -107,6 +107,7 @@ export default class TriadStackedMap extends Component {
     render() {
         return (
             <div style={{ 'width': CHART_WIDTH }} className="triad-stack-container">
+                <h4 className='text-primary chart-title'>Chromosome</h4>
                 <div style={{ 'width': CHART_WIDTH }}
                     className='view-finder-wrapper'>
                     <div id="view-finder-window"

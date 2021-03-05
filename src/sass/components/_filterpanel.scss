@@ -1,34 +1,23 @@
 .filter-panel {
     position: relative;
-}
+    margin: 20px auto;
+    padding: 25px 0px 0px 0px;
 
-.select {
-    // A reset of styles, including removing the default dropdown arrow
-    appearance: none;
-    // Additional resets for further consistency
-    background-color: transparent;
-    border: none;
-    padding: 0 1em 0 0;
-    margin: 0;
-    width: 100%;
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
-}
-
-.customSelect {
-    width: 100px;
-    display: inline-block;
-    margin-left: 10px;
-
-    .option {
-        font-weight: normal;
-        display: block;
-        white-space: pre;
-        min-height: 1.2em;
-        padding-top: 0px;
-        padding-right: 2px;
-        padding-bottom: 1px;
-        padding-left: 2px;
+    .line-select {
+        display: inline-block;
+        margin-left: 15px;
+    }
+    .inner-span {
+        color: #ffffff;
+        display: inline-block;
+        margin-right: 15px;
+    }
+    .select-box {
+        display: inline-block;
+        width: 500px;
+        margin-right: 10px;
+        &.source {
+            width: 150px;
+        }
     }
 }

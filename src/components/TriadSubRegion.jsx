@@ -46,6 +46,7 @@ export default class TriadStackedMap extends Component {
     render() {
         return (
             <div style={{ 'width': CHART_WIDTH }} className="triad-stack-container">
+                <h4 className='chart-title'>Sub Region</h4>
                 <canvas className="triad-stack-canvas" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
             </div>
         );

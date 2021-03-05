@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
+import ReactSelect from 'react-select';
+
 
 
 export default class FilterPanel extends Component {
@@ -8,14 +10,30 @@ export default class FilterPanel extends Component {
 
         const { subGenomes = [], onSubGenomeChange, activeSubGenome = '' } = this.props;
 
-        return (
-            <div className='filter-panel m-a'>
-                <label className='m-a'>Select Active Subgenome</label>
-                <select className='customSelect' onChange={onSubGenomeChange} value={activeSubGenome}>
-                    {_.map(subGenomes, (subGenome) => <option key={subGenome} value={subGenome}> {subGenome}</option>)}
-                </select>
-            </div>
+        let options = _.map(subGenomes, (subGenome) => {
+            return { label: subGenome, value: subGenome }
+        });
 
+        let defaultActiveSubGenome = { 'label': activeSubGenome, 'value': activeSubGenome };
+
+         return (
+            <div className='filter-panel'>
+                <div className="line-select">
+                    <span className='inner-span'>Select Active Subgenome</span>
+                    <ReactSelect
+                        value={defaultActiveSubGenome}
+                        className='select-box source'
+                        options={options}
+                        styles={{
+                            option: (styles) => ({
+                                ...styles,
+                                color: 'black', textAlign: 'left'
+                            })
+                        }}
+                        onChange={onSubGenomeChange}
+                    />
+                </div>
+            </div>
         );
     }
 }
