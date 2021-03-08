@@ -7,7 +7,9 @@ import _ from 'lodash';
 import TriadStackedMap from './TriadStackedMap';
 import TriadSubRegion from './TriadSubRegion';
 import FilterPanel from './FilterPanel';
-import TriadGenomeMap from './TriadGenomeMap'
+import TriadGenomeMap from './TriadGenomeMap';
+import Tooltip from './Tooltip';
+// import FloatingGenePanel from './FloatingGenePanel';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
 
@@ -20,6 +22,7 @@ class Dashboard extends Component {
             triadData: [],
             columns: [],
             genomeData: [],
+            geneData: [],
             chromosomes: [],
             activeChromosome: 'AT1',
             activeSubGenome: 'SG1',
@@ -53,14 +56,31 @@ class Dashboard extends Component {
 
     componentDidMount() {
 
-        const { activeSubGenome, activeChromosome } = this.state;
+        let { activeSubGenome, activeChromosome } = this.state, geneData = [];
 
         // Turn loader onON
         this.setState({ 'loader': true });
 
-        getFile('data/AT.txt')
-            .then((rawData) => {
+        getFile('data/AT_genes.gff')
+            .then((geneFile) => {
 
+                let lineData = geneFile.split('\n').slice(1).map((d) => d.split('\t'));
+
+                geneData = _.groupBy(_.map(lineData, (d) => {
+                    let coords = _.sortBy([+d[2], +d[3]]);
+                    return {
+                        'Chromosome': d[0],
+                        'gene': d[1],
+                        'start': coords[0],
+                        'end': coords[1]
+                    };
+                    // group the array by Chromosome
+                }), (e) => e.Chromosome);
+
+
+                return getFile('data/AT.txt');
+            })
+            .then((rawData) => {
                 // processing the data
                 let lineArray = rawData.split("\n");
                 let columns = lineArray.slice(0, 1)[0].trim().split('\t'),
@@ -91,7 +111,7 @@ class Dashboard extends Component {
                 // sort the data by the default set sort key
                 let triadData = _.sortBy(genomeData[activeChromosome], (d) => d[activeSubGenome]);
                 // Set the data onto the state
-                this.setState({ triadData, columns, genomeData, chromosomes });
+                this.setState({ triadData, columns, genomeData, chromosomes, geneData });
             })
             .catch(() => {
                 alert("Sorry there was an error in fetching and parsing the file");
@@ -107,7 +127,9 @@ class Dashboard extends Component {
 
     render() {
 
-        const { loader = false, triadData = [], columns = [], genomeData = [], chromosomes = [], activeSubGenome, region } = this.state,
+        const { loader = false, triadData = [], columns = [],
+            genomeData = [], chromosomes = [],
+            geneData = {}, activeSubGenome, activeChromosome = '', region } = this.state,
             subGenomes = [...columns.slice(1)];
 
         const chartScale = scaleLinear()
@@ -125,6 +147,8 @@ class Dashboard extends Component {
             .domain([0, innerTriadData.length - 1])
             .range([0, CHART_WIDTH]);
 
+        const { isTooltipVisible, tooltipData } = this.props;
+
 
         // set the dimensions of the graph
         return (
@@ -138,20 +162,22 @@ class Dashboard extends Component {
                             onSubGenomeChange={this.onSubGenomeChange} />
                         {triadData.length > 0 ?
                             <div>
+                                {/* code chunk to show tooltip*/}
+                                {isTooltipVisible && <Tooltip {...tooltipData} />}
                                 <TriadGenomeMap
                                     genomeData={genomeData}
                                     subGenomes={subGenomes}
                                     chartScale={chartScale}
                                     chromosomes={chromosomes}
-                                    onChromosomeChange={this.onChromosomeChange}
-                                />
+                                    onChromosomeChange={this.onChromosomeChange} />
                                 <TriadStackedMap
                                     subGenomes={subGenomes}
                                     triadData={triadData}
                                     chartScale={chartScale}
-                                    setRegionWindow={this.setRegionWindow}
-                                />
+                                    setRegionWindow={this.setRegionWindow} />
                                 <TriadSubRegion
+                                    activeGene={tooltipData ? tooltipData.gene || '' : ''}
+                                    geneData={geneData[activeChromosome.toLocaleLowerCase()] || []}
                                     subGenomes={subGenomes}
                                     triadData={innerTriadData}
                                     chartScale={innerChartScale}
@@ -176,6 +202,8 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
     return {
         // fill in with props that you need to read from state
+        isTooltipVisible: state.oracle.isTooltipVisible,
+        tooltipData: state.oracle.tooltipData
     };
 }
 

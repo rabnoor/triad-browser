@@ -34,6 +34,7 @@ export function showTooltip(isTooltipVisible, tooltipData) {
     };
 }
 
+
 export function setActiveTraitList(activeTraitList) {
     return { type: types.SET_ACTIVE_TRAITS, activeTraitList };
 }

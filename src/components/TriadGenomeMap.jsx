@@ -47,7 +47,6 @@ export default class TriadStackedMap extends Component {
         let scaleFactor = CHART_HEIGHT / yMax;
 
         context.lineWidth = subWidth / genomeData[chromosome].length;
-        console.log("line width", context.lineWidth)
 
         _.map(chartData, (dataPoint, dataIndex) => {
 

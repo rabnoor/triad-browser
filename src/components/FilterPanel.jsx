@@ -16,10 +16,10 @@ export default class FilterPanel extends Component {
 
         let defaultActiveSubGenome = { 'label': activeSubGenome, 'value': activeSubGenome };
 
-         return (
+        return (
             <div className='filter-panel'>
                 <div className="line-select">
-                    <span className='inner-span'>Select Active Subgenome</span>
+                    <span className='inner-span'>Sort By Subgenome</span>
                     <ReactSelect
                         value={defaultActiveSubGenome}
                         className='select-box source'
