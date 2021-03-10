@@ -10,7 +10,6 @@ export default class TriadLegend extends Component {
 
     componentDidMount() { this.drawLegend(); }
 
-
     drawLegend = () => {
         const { subGenomes = [] } = this.props;
 
@@ -18,8 +17,8 @@ export default class TriadLegend extends Component {
 
         const padding_from_left = 15;
         context.fillStyle = "white";
-        context.fillText("LEGEND", subGenomes.length*50/subGenomes.length, 10);
-        let y_coord = 25;
+        context.fillText("LEGEND", subGenomes.length*50/subGenomes.length, 35);
+        let y_coord = 50;
 
         _.map(subGenomes, (subGenome, index) => {
             context.beginPath();
