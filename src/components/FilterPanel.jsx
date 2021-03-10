@@ -10,7 +10,10 @@ export default class FilterPanel extends Component {
 
         const { subGenomes = [], onSubGenomeChange, activeSubGenome = '' } = this.props;
 
-        let options = _.map(subGenomes, (subGenome) => {
+        let combinations = getCombinations(subGenomes);
+        console.log(combinations)
+
+        let options = _.map(combinations, (subGenome) => {
             return { label: subGenome, value: subGenome }
         });
 
@@ -40,4 +43,14 @@ export default class FilterPanel extends Component {
     }
 }
 
-
+function getCombinations(chars) {
+    var result = [];
+    var f = function(prefix, chars) {
+      for (var i = 0; i < chars.length; i++) {
+        result.push(prefix + chars[i]);
+        f(prefix + chars[i] + " + ", chars.slice(i + 1));
+      }
+    }
+    f('', chars);
+    return result;
+  }

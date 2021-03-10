@@ -41,9 +41,20 @@ class Dashboard extends Component {
         let triadData;
         let genomeData;
 
-        if (event.value == "N/a") {
+        let values = event.value.split(" + ");
+
+        if (values == "N/a") {
             triadData = _.cloneDeep(this.state.originalTriadData);
             genomeData = _.cloneDeep(this.state.originalGenomeData);
+        } else if (values.length > 1) {
+            _.map(values, (sortKey) => {
+                console.log(sortKey);
+                triadData = _.sortBy(this.state.triadData, (d) => d[sortKey]);
+                genomeData = this.state.genomeData;
+                _.map(chromosomes, (chromosome) => {
+                    genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => d[sortKey])
+                });
+            });
         } else {
             triadData = _.sortBy(this.state.triadData, (d) => d[activeSubGenome]);
             genomeData = this.state.genomeData;
@@ -51,9 +62,6 @@ class Dashboard extends Component {
                 genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => d[activeSubGenome])
             })
         }
-
-        console.log(this.state.genomeData);
-        console.log(this.state.originalGenomeData);
 
         this.setState({ activeSubGenome, triadData, genomeData });
     }
