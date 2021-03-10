@@ -17,7 +17,7 @@ export default class TriadStackedMap extends Component {
     }
 
     componentDidUpdate() {
-        const { genomeData = [], subGenomes = [], chromosomes = [], chartScale, } = this.props;
+        const { genomeData = [], subGenomes = [], chromosomes = [], } = this.props;
 
         _.map(chromosomes, (chromosome, chromIndex) => {
             let subWidth = ChartScale(genomeData, chromosomes, chromIndex);

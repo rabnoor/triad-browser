@@ -14,6 +14,8 @@ export default class FilterPanel extends Component {
             return { label: subGenome, value: subGenome }
         });
 
+        options.unshift({label: 'N/a', value: 'N/a'})
+
         let defaultActiveSubGenome = { 'label': activeSubGenome, 'value': activeSubGenome };
 
         return (

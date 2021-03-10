@@ -20,12 +20,14 @@ class Dashboard extends Component {
         this.state = {
             loader: false,
             triadData: [],
+            originalTriadData: [],
             columns: [],
             genomeData: [],
+            originalGenomeData: [],
             geneData: [],
             chromosomes: [],
             activeChromosome: 'AT1',
-            activeSubGenome: 'SG1',
+            activeSubGenome: 'N/a',
             region: {
                 start: 0,
                 end: 0,
@@ -34,13 +36,23 @@ class Dashboard extends Component {
     }
 
     onSubGenomeChange = (event) => {
-        const activeSubGenome = event.value,
-            triadData = _.sortBy(this.state.triadData, (d) => d[activeSubGenome]),
-            genomeData = this.state.genomeData, chromosomes = this.state.chromosomes;
+        const activeSubGenome = event.value, chromosomes = this.state.chromosomes;
 
-        _.map(chromosomes, (chromosome) => {
-            genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => d[activeSubGenome])
-        })
+        let triadData;
+        let genomeData;
+
+        console.log(event.value);
+
+        if (event.value == "N/a") {
+            triadData = this.state.originalTriadData;
+            genomeData = this.state.originalGenomeData;
+        } else {
+            triadData = _.sortBy(this.state.triadData, (d) => d[activeSubGenome]);
+            genomeData = this.state.genomeData;
+            _.map(chromosomes, (chromosome) => {
+                genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => d[activeSubGenome])
+            })
+        }
 
         this.setState({ activeSubGenome, triadData, genomeData });
     }
@@ -77,7 +89,6 @@ class Dashboard extends Component {
                     // group the array by Chromosome
                 }), (e) => e.Chromosome);
 
-
                 return getFile('data/AT.txt');
             })
             .then((rawData) => {
@@ -97,6 +108,7 @@ class Dashboard extends Component {
                         });
 
                 let genomeData = _.groupBy(records, (d) => d.activeChromosome);
+                let originalGenomeData = _.cloneDeep(genomeData);
 
                 // Get the chromosome names and put into array
                 let chromosomes = _.sortBy(Object.keys(genomeData));
@@ -106,12 +118,11 @@ class Dashboard extends Component {
                     genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => d[activeSubGenome])
                 })
 
-                // TODO select none to not sort
-
                 // sort the data by the default set sort key
                 let triadData = _.sortBy(genomeData[activeChromosome], (d) => d[activeSubGenome]);
+                let originalTriadData = _.cloneDeep(triadData);
                 // Set the data onto the state
-                this.setState({ triadData, columns, genomeData, chromosomes, geneData });
+                this.setState({ triadData, columns, genomeData, chromosomes, geneData, originalGenomeData, originalTriadData});
             })
             .catch(() => {
                 alert("Sorry there was an error in fetching and parsing the file");
