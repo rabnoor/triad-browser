@@ -9,6 +9,7 @@ import TriadSubRegion from './TriadSubRegion';
 import FilterPanel from './FilterPanel';
 import TriadGenomeMap from './TriadGenomeMap';
 import Tooltip from './Tooltip';
+import TriadLegend from './TriadLegend';
 // import FloatingGenePanel from './FloatingGenePanel';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
@@ -131,7 +132,7 @@ class Dashboard extends Component {
                 let triadData = _.sortBy(genomeData[activeChromosome], (d) => d[activeSubGenome]);
                 let originalTriadData = _.cloneDeep(triadData);
                 // Set the data onto the state
-                this.setState({ triadData, columns, genomeData, chromosomes, geneData, originalGenomeData, originalTriadData});
+                this.setState({ triadData, columns, genomeData, chromosomes, geneData, originalGenomeData, originalTriadData });
             })
             .catch(() => {
                 alert("Sorry there was an error in fetching and parsing the file");
@@ -176,6 +177,8 @@ class Dashboard extends Component {
                 {loader ?
                     <Loader className='loading-spinner' type='spin' height='100px' width='100px' color='#d6e5ff' delay={- 1} /> :
                     <div className='dashboard-inner-root text-center'>
+                        <TriadLegend
+                            subGenomes={subGenomes} />
                         <FilterPanel
                             activeSubGenome={activeSubGenome}
                             subGenomes={subGenomes}

@@ -89,9 +89,6 @@ class TriadSubRegion extends Component {
             .domain([sortedGeneData[0].start, sortedGeneData[sortedGeneData.length - 1].end])
             .range([0, CHART_WIDTH]);
 
-
-        console.log(activeGene);
-
         const geneLines = _.map(sortedGeneData, (d, i) => {
             return {
                 'color': d.gene == activeGene ? 'white' : schemeTableau10[4],
@@ -104,8 +101,6 @@ class TriadSubRegion extends Component {
 
         let geneContext = clearAndGetContext(this.geneCanvas);
 
-
-
         _.map(geneLines, (line) => {
             geneContext.beginPath();
             geneContext.lineWidth = line.height;
@@ -114,10 +109,6 @@ class TriadSubRegion extends Component {
             geneContext.lineTo(Math.round(line.end), line.y);
             geneContext.stroke();
         });
-
-
-
-
     }
 
     render() {

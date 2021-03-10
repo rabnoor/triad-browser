@@ -11,7 +11,6 @@ export default class FilterPanel extends Component {
         const { subGenomes = [], onSubGenomeChange, activeSubGenome = '' } = this.props;
 
         let combinations = getCombinations(subGenomes);
-        console.log(combinations)
 
         let options = _.map(combinations, (subGenome) => {
             return { label: subGenome, value: subGenome }
