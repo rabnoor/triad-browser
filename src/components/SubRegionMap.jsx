@@ -7,16 +7,15 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { showTooltip } from '../redux/actions/actions';
 
-class TriadSubRegion extends Component {
+class SubRegionMap extends Component {
 
     componentDidMount() { this.drawChart() }
 
     componentDidUpdate() { this.drawChart() }
 
-
     onMouseMove = (event) => {
 
-        let { showTooltip, chartScale, triadData } = this.props;
+        let { showTooltip, chartScale, chromosomeData } = this.props;
 
 
         var pageWidth = document.body.getBoundingClientRect().width,
@@ -30,7 +29,7 @@ class TriadSubRegion extends Component {
         //     dataPoint = referenceMap[referenceIndex];
 
         const referenceIndex = Math.floor(chartScale.invert(xPosition)),
-            dataPoint = triadData[referenceIndex];
+            dataPoint = chromosomeData[referenceIndex];
 
         showTooltip(true, {
             'x': event.pageX + 200 > pageWidth ? event.pageX - 200 : event.pageX + 25,
@@ -45,15 +44,13 @@ class TriadSubRegion extends Component {
 
     onMouseLeave = (event) => { this.props.showTooltip(false) }
 
-
-
     drawChart = () => {
 
-        const { triadData = [], subGenomes = [], chartScale,
+        const { chromosomeData = [], subGenomes = [], chartScale,
             geneData = [], activeGene = '' } = this.props;
         let context = clearAndGetContext(this.canvas);
 
-        let chartData = _.map(triadData, (dataPoint) => {
+        let chartData = _.map(chromosomeData, (dataPoint) => {
 
             let values = _.map(subGenomes, (d) => dataPoint[d]);
 
@@ -65,7 +62,7 @@ class TriadSubRegion extends Component {
 
         let scaleFactor = CHART_HEIGHT / yMax;
 
-        context.lineWidth = CHART_WIDTH / triadData.length;
+        context.lineWidth = CHART_WIDTH / chromosomeData.length;
 
         _.map(chartData, (dataPoint, dataIndex) => {
 
@@ -127,12 +124,10 @@ class TriadSubRegion extends Component {
     }
 }
 
-
 function mapDispatchToProps(dispatch) {
     return {
         showTooltip: bindActionCreators(showTooltip, dispatch)
     };
 }
 
-
-export default connect(null, mapDispatchToProps)(TriadSubRegion);
+export default connect(null, mapDispatchToProps)(SubRegionMap);

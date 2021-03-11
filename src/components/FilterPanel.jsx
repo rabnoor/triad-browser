@@ -10,11 +10,11 @@ export default class FilterPanel extends Component {
 
         const { subGenomes = [], onSubGenomeChange, activeSubGenome = '' } = this.props;
 
-        let options = _.map(combinations, (subGenome) => {
+        let options = _.map(subGenomes, (subGenome) => {
             return { label: subGenome, value: subGenome }
         });
 
-        options.unshift({label: 'N/a', value: 'N/a'})
+        options.unshift({label: 'N/A', value: 'N/A'})
 
         let defaultActiveSubGenome = { 'label': activeSubGenome, 'value': activeSubGenome };
 

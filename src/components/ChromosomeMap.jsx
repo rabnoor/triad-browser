@@ -4,8 +4,11 @@ import { clearAndGetContext } from '../utils/canvasUtilities';
 import _ from 'lodash';
 import interact from 'interactjs';
 import { schemeTableau10 } from 'd3';
+import { setRegion } from '../redux/actions/actions';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-export default class TriadStackedMap extends Component {
+class ChromosomeMap extends Component {
 
     componentDidMount() { this.drawChart() }
 
@@ -13,10 +16,10 @@ export default class TriadStackedMap extends Component {
 
     drawChart = () => {
 
-        const { triadData = [], subGenomes = [], chartScale } = this.props;
+        const { chromosomeData = [], subGenomes = [], chartScale } = this.props;
         let context = clearAndGetContext(this.canvas);
 
-        let chartData = _.map(triadData, (dataPoint) => {
+        let chartData = _.map(chromosomeData, (dataPoint) => {
 
             let values = _.map(subGenomes, (d) => dataPoint[d]);
 
@@ -30,7 +33,7 @@ export default class TriadStackedMap extends Component {
 
         let scaleFactor = CHART_HEIGHT / yMax;
 
-        context.lineWidth = CHART_WIDTH / triadData.length;
+        context.lineWidth = CHART_WIDTH / chromosomeData.length;
 
         _.map(chartData, (dataPoint, dataIndex) => {
 
@@ -45,10 +48,10 @@ export default class TriadStackedMap extends Component {
             })
         });
     }
-    
+
     attachResizing = () => {
 
-        const { setRegionWindow, chartScale } = this.props;
+        const { chartScale, actions} = this.props;
 
         interact('#view-finder-window')
             .draggable({
@@ -65,8 +68,8 @@ export default class TriadStackedMap extends Component {
                             target.setAttribute('data-x', x);
                         }
                     },
-                    end(event) { 
-                        setRegionWindow(getStartAndEnd(event.target, chartScale))
+                    end(event) {
+                        actions.setRegion(getStartAndEnd(event.target, chartScale))
                     }
                 },
             })
@@ -86,8 +89,8 @@ export default class TriadStackedMap extends Component {
                             'translate(' + x + 'px,' + '0px)'
                         target.setAttribute('data-x', x);
                     },
-                    end(event) { 
-                        setRegionWindow(getStartAndEnd(event.target, chartScale))
+                    end(event) {
+                        actions.setRegion(getStartAndEnd(event.target, chartScale))
                     }
                 },
                 modifiers: [
@@ -105,9 +108,11 @@ export default class TriadStackedMap extends Component {
     }
 
     render() {
+        const { activeChromosome = '' } = this.props;
+
         return (
             <div style={{ 'width': CHART_WIDTH }} className="triad-stack-container">
-                <h4 className='text-primary chart-title'>Chromosome</h4>
+                <h4 className='text-primary chart-title'>Chromosome ({activeChromosome})</h4>
                 <div style={{ 'width': CHART_WIDTH }}
                     className='view-finder-wrapper'>
                     <div id="view-finder-window"
@@ -135,3 +140,21 @@ function getStartAndEnd(target, chartScale) {
         'end': Math.round(chartScale.invert(end))
     };
 }
+
+
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: bindActionCreators({
+            setRegion,
+        }, dispatch)
+    };
+}
+
+function mapStateToProps(state) {
+    return {
+        // fill in with props that you need to read from state
+        region: state.oracle.region
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChromosomeMap);

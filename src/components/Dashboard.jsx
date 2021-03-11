@@ -4,15 +4,14 @@ import { bindActionCreators } from 'redux';
 import Loader from 'react-loading';
 import { getFile } from '../utils/fetchData';
 import _ from 'lodash';
-import TriadStackedMap from './TriadStackedMap';
-import TriadSubRegion from './TriadSubRegion';
+import ChromosomeMap from './ChromosomeMap';
+import SubRegionMap from './SubRegionMap';
 import FilterPanel from './FilterPanel';
 import TriadGenomeMap from './TriadGenomeMap';
 import Tooltip from './Tooltip';
-import TriadLegend from './TriadLegend';
-// import FloatingGenePanel from './FloatingGenePanel';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
+import { setGenomeData, setChromosomeData, setDefaultData, setRegion } from '../redux/actions/actions';
 
 class Dashboard extends Component {
 
@@ -20,56 +19,23 @@ class Dashboard extends Component {
         super(props)
         this.state = {
             loader: false,
-            triadData: [],
-            originalTriadData: [],
-            columns: [],
-            genomeData: [],
-            originalGenomeData: [],
+            subGenomes: [],
             geneData: [],
             chromosomes: [],
-            activeChromosome: 'AT1',
-            activeSubGenome: 'N/a',
-            region: {
-                start: 0,
-                end: 0,
-            },
         }
     }
 
     onSubGenomeChange = (event) => {
-        const activeSubGenome = event.value, chromosomes = this.state.chromosomes;
-
-        let triadData;
-        let genomeData;
-
-        let values = event.value.split(" + ");
-
-        if (values == "N/a") {
-            triadData = _.cloneDeep(this.state.originalTriadData);
-            genomeData = _.cloneDeep(this.state.originalGenomeData);
-        } else {
-            triadData = _.sortBy(this.state.triadData, (d) => d[activeSubGenome]);
-            genomeData = this.state.genomeData;
-            _.map(chromosomes, (chromosome) => {
-                genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => d[activeSubGenome])
-            })
-        }
-
-        this.setState({ activeSubGenome, triadData, genomeData });
+        this.props.actions.setGenomeData(event.value, this.props.activeChromosome);
     }
 
-    onChromosomeChange = (event) => {
-        const activeChromosome = event,
-            genomeData = this.state.genomeData,
-            activeSubGenome = this.state.activeSubGenome,
-            triadData = _.sortBy(genomeData[activeChromosome], (d) => d[activeSubGenome]);
-
-        this.setState({ activeChromosome, triadData });
+    onChromosomeChange = (activeChromosome) => {
+        this.props.actions.setChromosomeData(activeChromosome, this.props.genomeData);
     }
 
     componentDidMount() {
 
-        let { activeSubGenome, activeChromosome } = this.state, geneData = [];
+        let { activeSubGenome, activeChromosome, actions } = this.props, geneData = [];
 
         // Turn loader onON
         this.setState({ 'loader': true });
@@ -120,10 +86,17 @@ class Dashboard extends Component {
                 })
 
                 // sort the data by the default set sort key
-                let triadData = _.sortBy(genomeData[activeChromosome], (d) => d[activeSubGenome]);
-                let originalTriadData = _.cloneDeep(triadData);
+                let chromosomeData = _.sortBy(genomeData[activeChromosome], (d) => d[activeSubGenome]);
+                let originalChromosomeData = _.cloneDeep(chromosomeData);
+
+                let subGenomes = [...columns.slice(1)]
+
+                // Dumping original data to window so that it can be used later on
+                window.triadBrowserStore = { 'chromosomeData': originalChromosomeData, 'genomeData': originalGenomeData };
+
+                actions.setDefaultData(chromosomeData, genomeData);
                 // Set the data onto the state
-                this.setState({ triadData, columns, genomeData, chromosomes, geneData, originalGenomeData, originalTriadData });
+                this.setState({ subGenomes, chromosomes, geneData });
             })
             .catch(() => {
                 alert("Sorry there was an error in fetching and parsing the file");
@@ -133,33 +106,30 @@ class Dashboard extends Component {
 
     }
 
-    setRegionWindow = (region) => {
-        this.setState({ 'region': { ...region } })
-    }
-
     render() {
 
-        const { loader = false, triadData = [], columns = [],
-            genomeData = [], chromosomes = [],
-            geneData = {}, activeSubGenome, activeChromosome = '', region } = this.state,
-            subGenomes = [...columns.slice(1)];
+        const { genomeData, chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region } = this.props;
+
+        const { loader = false, chromosomes = [], subGenomes = [],
+            geneData = {} } = this.state;
 
         const chartScale = scaleLinear()
-            .domain([0, triadData.length - 1])
+            .domain([0, chromosomeData.length - 1])
             .range([0, CHART_WIDTH]);
 
-        let { start = 0, end = 0 } = region;
+        let { start, end } = region;
 
         if (end == 0) {
             end = Math.round(chartScale.invert(50));
         }
 
-        const innerTriadData = triadData.slice(start, end);
+        const innerTriadData = chromosomeData.slice(start, end);
         const innerChartScale = scaleLinear()
             .domain([0, innerTriadData.length - 1])
             .range([0, CHART_WIDTH]);
 
-        const { isTooltipVisible, tooltipData } = this.props;
+        console.log(subGenomes);
+        console.log(activeSubGenome);
 
 
         // set the dimensions of the graph
@@ -168,13 +138,11 @@ class Dashboard extends Component {
                 {loader ?
                     <Loader className='loading-spinner' type='spin' height='100px' width='100px' color='#d6e5ff' delay={- 1} /> :
                     <div className='dashboard-inner-root text-center'>
-                        <TriadLegend
-                            subGenomes={subGenomes} />
                         <FilterPanel
                             activeSubGenome={activeSubGenome}
                             subGenomes={subGenomes}
                             onSubGenomeChange={this.onSubGenomeChange} />
-                        {triadData.length > 0 ?
+                        {chromosomeData.length > 0 ?
                             <div>
                                 {/* code chunk to show tooltip*/}
                                 {isTooltipVisible && <Tooltip {...tooltipData} />}
@@ -184,16 +152,16 @@ class Dashboard extends Component {
                                     chartScale={chartScale}
                                     chromosomes={chromosomes}
                                     onChromosomeChange={this.onChromosomeChange} />
-                                <TriadStackedMap
+                                <ChromosomeMap
                                     subGenomes={subGenomes}
-                                    triadData={triadData}
-                                    chartScale={chartScale}
-                                    setRegionWindow={this.setRegionWindow} />
-                                <TriadSubRegion
+                                    activeChromosome={activeChromosome}
+                                    chromosomeData={chromosomeData}
+                                    chartScale={chartScale} />
+                                <SubRegionMap
                                     activeGene={tooltipData ? tooltipData.gene || '' : ''}
                                     geneData={geneData[activeChromosome.toLocaleLowerCase()] || []}
                                     subGenomes={subGenomes}
-                                    triadData={innerTriadData}
+                                    chromosomeData={innerTriadData}
                                     chartScale={innerChartScale}
                                 />
                             </div>
@@ -208,7 +176,9 @@ class Dashboard extends Component {
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators({
-            // fill in with actions here 
+            setGenomeData,
+            setChromosomeData,
+            setDefaultData,
         }, dispatch)
     };
 }
@@ -216,8 +186,13 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
     return {
         // fill in with props that you need to read from state
+        genomeData: state.genome.genomeData,
+        chromosomeData: state.genome.chromosomeData,
+        activeSubGenome: state.oracle.activeSubGenome,
+        activeChromosome: state.oracle.activeChromosome,
         isTooltipVisible: state.oracle.isTooltipVisible,
-        tooltipData: state.oracle.tooltipData
+        tooltipData: state.oracle.tooltipData,
+        region: state.oracle.region
     };
 }
 

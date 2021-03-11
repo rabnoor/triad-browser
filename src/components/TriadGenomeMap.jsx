@@ -3,7 +3,7 @@ import { CHART_WIDTH, CHART_HEIGHT } from '../utils/chartConstants';
 import { clearAndGetContext } from '../utils/canvasUtilities';
 import _ from 'lodash';
 import { schemeTableau10, scaleLinear } from 'd3';
-
+import TriadLegend from './TriadLegend';
 
 export default class TriadStackedMap extends Component {
 
@@ -64,7 +64,7 @@ export default class TriadStackedMap extends Component {
     }
 
     render() {
-        const { genomeData = [], chromosomes = [], activeChromosome, } = this.props;
+        const { genomeData = [], chromosomes = [], activeChromosome, subGenomes = [], } = this.props;
 
         const canvasList = _.map(chromosomes, (chrom, chromIndex) => {
             const subWidth = ChartScale(genomeData, chromosomes, chromIndex);
@@ -83,7 +83,11 @@ export default class TriadStackedMap extends Component {
 
         return (
             <div className='genomemap-container'>
-                <h4 className='text-primary chart-title'>Genome</h4>
+                <div className="text-center">
+                    <TriadLegend
+                        subGenomes={subGenomes} />
+                    <h4 className='text-primary chart-title'>Genome</h4>
+                </div>
                 {canvasList}
             </div>
         );

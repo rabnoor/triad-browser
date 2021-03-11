@@ -1,18 +1,16 @@
 export default {
   oracle: {
-    loaderState: false,
-    colorScheme: 'difference',
-    // none, tree, traits
-    referenceType: 'tree',
-    sourceLine: '',
-    targetLines: [],
-    selectedChromosome: '',
-    regionStart: 0,
-    regionEnd: 0,
-    zoomLevel: 1,
-    trait: '',
-    activeTraitList: [],
+    activeChromosome: 'AT1',
+    activeSubGenome: 'N/A',
     tooltipData: null,
-    isTooltipVisible: false
+    isTooltipVisible: false,
+    region: {
+      start: 0,
+      end: 0,
+    },
+  },
+  genome: {
+    chromosomeData: [],
+    genomeData: {},
   }
 };
