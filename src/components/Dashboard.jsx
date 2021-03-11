@@ -47,15 +47,6 @@ class Dashboard extends Component {
         if (values == "N/a") {
             triadData = _.cloneDeep(this.state.originalTriadData);
             genomeData = _.cloneDeep(this.state.originalGenomeData);
-        } else if (values.length > 1) {
-            _.map(values, (sortKey) => {
-                console.log(sortKey);
-                triadData = _.sortBy(this.state.triadData, (d) => d[sortKey]);
-                genomeData = this.state.genomeData;
-                _.map(chromosomes, (chromosome) => {
-                    genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => d[sortKey])
-                });
-            });
         } else {
             triadData = _.sortBy(this.state.triadData, (d) => d[activeSubGenome]);
             genomeData = this.state.genomeData;
