@@ -12,6 +12,7 @@ import Tooltip from './Tooltip';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
 import { setGenomeData, setChromosomeData, setDefaultData, setRegion } from '../redux/actions/actions';
+import GeneRefMap from './GeneRefMap';
 
 class Dashboard extends Component {
 
@@ -128,9 +129,6 @@ class Dashboard extends Component {
             .domain([0, innerTriadData.length - 1])
             .range([0, CHART_WIDTH]);
 
-        console.log(subGenomes);
-        console.log(activeSubGenome);
-
 
         // set the dimensions of the graph
         return (
@@ -158,11 +156,12 @@ class Dashboard extends Component {
                                     chromosomeData={chromosomeData}
                                     chartScale={chartScale} />
                                 <SubRegionMap
-                                    activeGene={tooltipData ? tooltipData.gene || '' : ''}
-                                    geneData={geneData[activeChromosome.toLocaleLowerCase()] || []}
                                     subGenomes={subGenomes}
-                                    chromosomeData={innerTriadData}
+                                    subRegionData={innerTriadData}
                                     chartScale={innerChartScale}
+                                />
+                                <GeneRefMap
+                                    geneData={geneData[activeChromosome.toLocaleLowerCase()] || []}
                                 />
                             </div>
                             : <h2>Sorry the data file is empty.</h2>}

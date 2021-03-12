@@ -2,12 +2,27 @@ import React, { Component } from 'react';
 import { CHART_WIDTH, CHART_HEIGHT } from '../utils/chartConstants';
 import { clearAndGetContext } from '../utils/canvasUtilities';
 import _ from 'lodash';
-import { schemeTableau10, scaleLinear } from 'd3';
+import { schemeTableau10 } from 'd3';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { showTooltip } from '../redux/actions/actions';
+import { setActiveGenes, showTooltip } from '../redux/actions/actions';
+import interact from 'interactjs';
+import Switch from 'react-switch';
+import TriadLegend from './TriadLegend';
+
 
 class SubRegionMap extends Component {
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            enableSelectionRegion: false,
+            region: {
+                start: 0,
+                end: 0,
+            },
+        };
+    }
 
     componentDidMount() { this.drawChart() }
 
@@ -15,23 +30,18 @@ class SubRegionMap extends Component {
 
     onMouseMove = (event) => {
 
-        let { showTooltip, chartScale, chromosomeData } = this.props;
+        let { actions, chartScale, subRegionData } = this.props;
 
 
         var pageWidth = document.body.getBoundingClientRect().width,
             canvasRect = event.currentTarget.getBoundingClientRect();
 
-        const xPosition = event.pageX - canvasRect.left,
-            yPosition = event.pageY - window.pageYOffset - canvasRect.top;
-
-        // const lineName = lineNames[Math.round((yPosition - 12) / TRACK_HEIGHT)],
-        //     referenceIndex = Math.floor(referenceScale.invert(xPosition)),
-        //     dataPoint = referenceMap[referenceIndex];
+        const xPosition = event.pageX - canvasRect.left;
 
         const referenceIndex = Math.floor(chartScale.invert(xPosition)),
-            dataPoint = chromosomeData[referenceIndex];
+            dataPoint = subRegionData[referenceIndex];
 
-        showTooltip(true, {
+        actions.showTooltip(true, {
             'x': event.pageX + 200 > pageWidth ? event.pageX - 200 : event.pageX + 25,
             'y': event.pageY - 50,
             'gene': dataPoint.Gene,
@@ -42,15 +52,20 @@ class SubRegionMap extends Component {
 
     }
 
-    onMouseLeave = (event) => { this.props.showTooltip(false) }
+    onToggleRegionWindow = (event) => {
+        // Remove active genes when switching modes
+        this.props.actions.setActiveGenes([]);
+        this.setState({ 'enableSelectionRegion': !this.state.enableSelectionRegion })
+    };
+
+    onMouseLeave = (event) => { this.props.actions.showTooltip(false) }
 
     drawChart = () => {
 
-        const { chromosomeData = [], subGenomes = [], chartScale,
-            geneData = [], activeGene = '' } = this.props;
+        const { subRegionData = [], subGenomes = [], chartScale } = this.props;
         let context = clearAndGetContext(this.canvas);
 
-        let chartData = _.map(chromosomeData, (dataPoint) => {
+        let chartData = _.map(subRegionData, (dataPoint) => {
 
             let values = _.map(subGenomes, (d) => dataPoint[d]);
 
@@ -58,11 +73,13 @@ class SubRegionMap extends Component {
 
         });
 
+        this.attachResizing();
+
         let yMax = _.max(_.map(chartData, (d) => _.max(d)));
 
         let scaleFactor = CHART_HEIGHT / yMax;
 
-        context.lineWidth = CHART_WIDTH / chromosomeData.length;
+        context.lineWidth = CHART_WIDTH / subRegionData.length;
 
         _.map(chartData, (dataPoint, dataIndex) => {
 
@@ -76,57 +93,143 @@ class SubRegionMap extends Component {
                 context.stroke();
             })
         });
-
-        // Start drawing the gene map here 
-        const sortedGeneData = _.sortBy(geneData, (d) => d.start);
-
-        // The genomic scale runs from starting coordinate 
-        // of the first gene to ending coordinate of the last gene 
-        const geneChartScale = scaleLinear()
-            .domain([sortedGeneData[0].start, sortedGeneData[sortedGeneData.length - 1].end])
-            .range([0, CHART_WIDTH]);
-
-        const geneLines = _.map(sortedGeneData, (d, i) => {
-            return {
-                'color': d.gene == activeGene ? 'white' : schemeTableau10[4],
-                'start': geneChartScale(d.start),
-                'end': d.gene == activeGene ? geneChartScale(d.end) + 5 : geneChartScale(d.end),
-                'y': 30,
-                'height': d.gene == activeGene ? 75 : 40
-            };
-        });
-
-        let geneContext = clearAndGetContext(this.geneCanvas);
-
-        _.map(geneLines, (line) => {
-            geneContext.beginPath();
-            geneContext.lineWidth = line.height;
-            geneContext.strokeStyle = line.color;
-            geneContext.moveTo(Math.round(line.start), line.y);
-            geneContext.lineTo(Math.round(line.end), line.y);
-            geneContext.stroke();
-        });
     }
 
+
+    setRegion = (region) => {
+        let activeGenes = this.props.subRegionData.slice(region.start, region.end);
+        this.props.actions.setActiveGenes(_.map(activeGenes, (d) => d.Gene));
+        this.setState({ region });
+    }
+
+    attachResizing = () => {
+
+        const { chartScale } = this.props;
+
+        interact('#gene-finder-window')
+            .draggable({
+                inertia: true,
+                listeners: {
+                    'move': (event) => {
+                        // Generic code that handles position of the window and sets it back onto the dom elemen
+                        var target = event.target;
+                        var x = (parseFloat(target.getAttribute('data-x')) || 0);
+                        x += event.dx;
+                        if (x >= 0 && x <= (CHART_WIDTH - event.rect.width)) {
+                            target.style.webkitTransform = target.style.transform =
+                                'translate(' + x + 'px,' + '0px)'
+                            target.setAttribute('data-x', x);
+                        }
+                    },
+                    'end': (event) => {
+                        this.setRegion(getStartAndEnd(event.target, chartScale));
+                    }
+                },
+            })
+            .resizable({
+                // resize from all edges and corners
+                edges: { left: true, right: true, bottom: false, top: false },
+                listeners: {
+                    'move': (event) => {
+                        // Generic code that handles width and position of the window and sets it back onto the dom element
+                        var target = event.target;
+                        var x = (parseFloat(target.getAttribute('data-x')) || 0);
+                        // update the element's style
+                        target.style.width = event.rect.width + 'px';
+                        // translate when resizing from left edges
+                        x += event.deltaRect.left;
+                        target.style.webkitTransform = target.style.transform =
+                            'translate(' + x + 'px,' + '0px)'
+                        target.setAttribute('data-x', x);
+                    },
+                    'end': (event) => {
+                        this.setRegion(getStartAndEnd(event.target, chartScale));
+                    }
+                },
+                modifiers: [
+                    // keep the edges inside the parent
+                    interact.modifiers.restrictEdges({
+                        outer: 'parent'
+                    }),
+                    // minimum size
+                    interact.modifiers.restrictSize({
+                        min: { width: 30 }
+                    })
+                ],
+                inertia: true
+            })
+    }
+
+
     render() {
+        let { enableSelectionRegion = false } = this.state;
+        const { subGenomes = [] } = this.props; 
         return (
             <div style={{ 'width': CHART_WIDTH }} className="triad-stack-container">
-                <h4 className='chart-title'>Sub Region</h4>
-                <canvas onMouseOver={this.onMouseMove}
-                    onMouseMove={this.onMouseMove}
-                    onMouseLeave={this.onMouseLeave}
+                <div className='m-b'>
+                    <TriadLegend
+                        subGenomes={subGenomes} />
+                    <h4 className='chart-title'>Sub Region</h4>
+                    <span className='switch-container'>
+                        <div className='switch-inner'>
+                            <label htmlFor="material-switch-norm">
+                                <Switch
+                                    checked={enableSelectionRegion}
+                                    onChange={this.onToggleRegionWindow}
+                                    onColor="#86d3ff"
+                                    onHandleColor="#2693e6"
+                                    handleDiameter={16}
+                                    uncheckedIcon={false}
+                                    checkedIcon={false}
+                                    boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                                    activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                                    height={12}
+                                    width={35}
+                                    className="react-switch"
+                                    id="material-switch-norm" />
+                            </label>
+                        </div>
+                        <span className='switch-label'>Select Region</span>
+                    </span>
+                </div>
+                {enableSelectionRegion &&
+                    <div style={{ 'width': CHART_WIDTH }}
+                        className='gene-finder-wrapper'>
+                        <div id="gene-finder-window"
+                            style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
+                        </div>
+                    </div>
+                }
+                <canvas
+                    onMouseOver={enableSelectionRegion ? undefined : this.onMouseMove}
+                    onMouseMove={enableSelectionRegion ? undefined : this.onMouseMove}
+                    onMouseLeave={enableSelectionRegion ? undefined : this.onMouseLeave}
                     className="triad-stack-canvas" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
-
-                <h4 className='chart-title m-t'>Reference Gene Map</h4>
-                <canvas className="gene-canvas" width={CHART_WIDTH} height={60} ref={(el) => { this.geneCanvas = el }} > </canvas>
             </div>
         );
     }
 }
 
+function getStartAndEnd(target, chartScale) {
+    let xPosition = (parseFloat(target.getAttribute('data-x')) || 0),
+        width = target.style.width;
+    if (width.indexOf('px') > -1) {
+        width = +width.slice(0, -2);
+    }
+    else {
+        width = 50;
+    }
+    const start = Math.abs(xPosition), end = start + width;
+    return {
+        'start': Math.round(chartScale.invert(start)),
+        'end': Math.round(chartScale.invert(end))
+    };
+}
+
+
 function mapDispatchToProps(dispatch) {
     return {
-        showTooltip: bindActionCreators(showTooltip, dispatch)
+        actions: bindActionCreators({ showTooltip, setActiveGenes }, dispatch),
     };
 }
 

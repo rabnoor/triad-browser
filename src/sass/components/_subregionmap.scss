@@ -1,0 +1,40 @@
+.switch-container {
+    background: #434857;
+    padding: 10px;
+    margin-left: 10px;
+    border-radius: 10px;
+    color: black;
+    .switch-inner {
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 5px;
+        label {
+            margin-bottom: 0px !important;
+        }
+    }
+    .switch-label {
+        padding: 10px;
+        font-size: 1.1em;
+        font-weight: 500;
+        color: white;
+    }
+}
+
+.triad-stack-container {
+    margin: 10px auto;
+    position: relative;
+    padding-bottom: 20px;
+
+    .gene-finder-wrapper {
+        z-index: 30;
+        position: absolute;
+    }
+
+    #gene-finder-window {
+        width: 50px;
+        background-color: #4c585d36;
+        touch-action: none;
+        box-sizing: border-box;
+        border-bottom: 5px solid #1d6e90;
+    }
+}

@@ -7,6 +7,7 @@ import { schemeTableau10 } from 'd3';
 import { setRegion } from '../redux/actions/actions';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import TriadLegend from './TriadLegend';
 
 class ChromosomeMap extends Component {
 
@@ -51,7 +52,7 @@ class ChromosomeMap extends Component {
 
     attachResizing = () => {
 
-        const { chartScale, actions} = this.props;
+        const { chartScale, actions } = this.props;
 
         interact('#view-finder-window')
             .draggable({
@@ -108,10 +109,12 @@ class ChromosomeMap extends Component {
     }
 
     render() {
-        const { activeChromosome = '' } = this.props;
+        const { activeChromosome = '', subGenomes = [] } = this.props;
 
         return (
             <div style={{ 'width': CHART_WIDTH }} className="triad-stack-container">
+                <TriadLegend
+                    subGenomes={subGenomes} />
                 <h4 className='text-primary chart-title'>Chromosome ({activeChromosome})</h4>
                 <div style={{ 'width': CHART_WIDTH }}
                     className='view-finder-wrapper'>
