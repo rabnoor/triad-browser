@@ -52,10 +52,18 @@ class SubRegionMap extends Component {
 
     }
 
-    onToggleRegionWindow = (event) => {
+    onToggleRegionWindow = (enableSelectionRegion) => {
         // Remove active genes when switching modes
-        this.props.actions.setActiveGenes([]);
-        this.setState({ 'enableSelectionRegion': !this.state.enableSelectionRegion })
+        let regionWindow = document.getElementById("gene-finder-window");
+
+        if (enableSelectionRegion) {
+            this.setRegion(getStartAndEnd(regionWindow, this.props.chartScale));
+        }
+        else {
+            this.props.actions.setActiveGenes([]);
+        }
+
+        this.setState({ enableSelectionRegion });
     };
 
     onMouseLeave = (event) => { this.props.actions.showTooltip(false) }
@@ -163,7 +171,7 @@ class SubRegionMap extends Component {
 
     render() {
         let { enableSelectionRegion = false } = this.state;
-        const { subGenomes = [] } = this.props; 
+        const { subGenomes = [] } = this.props;
         return (
             <div style={{ 'width': CHART_WIDTH }} className="triad-stack-container">
                 <div className='m-b'>
@@ -192,14 +200,12 @@ class SubRegionMap extends Component {
                         <span className='switch-label'>Select Region</span>
                     </span>
                 </div>
-                {enableSelectionRegion &&
-                    <div style={{ 'width': CHART_WIDTH }}
-                        className='gene-finder-wrapper'>
-                        <div id="gene-finder-window"
-                            style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
-                        </div>
+                <div style={{ 'width': CHART_WIDTH }}
+                    className={'gene-finder-wrapper ' + (enableSelectionRegion ? '' : 'hide')}>
+                    <div id="gene-finder-window"
+                        style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
                     </div>
-                }
+                </div>
                 <canvas
                     onMouseOver={enableSelectionRegion ? undefined : this.onMouseMove}
                     onMouseMove={enableSelectionRegion ? undefined : this.onMouseMove}

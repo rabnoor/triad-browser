@@ -57,6 +57,9 @@ class Dashboard extends Component {
                     // group the array by Chromosome
                 }), (e) => e.Chromosome);
 
+
+                debugger;
+
                 return getFile('data/AT.txt');
             })
             .then((rawData) => {
