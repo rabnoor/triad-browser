@@ -13,5 +13,6 @@ export default {
   genome: {
     chromosomeData: [],
     genomeData: {},
+    geneData: [],
   }
 };

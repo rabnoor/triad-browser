@@ -171,7 +171,8 @@ class SubRegionMap extends Component {
 
     render() {
         let { enableSelectionRegion = false } = this.state;
-        const { subGenomes = [], activeChromosome = ''} = this.props;
+        let {activeChromosome = '', subGenomes = [] } = this.props;
+
         return (
             <div style={{ 'width': CHART_WIDTH }} className="triad-stack-container">
                 <div className='m-b'>

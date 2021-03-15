@@ -21,7 +21,6 @@ class Dashboard extends Component {
         this.state = {
             loader: false,
             subGenomes: [],
-            geneData: [],
             chromosomes: [],
         }
     }
@@ -36,8 +35,9 @@ class Dashboard extends Component {
 
     componentDidMount() {
 
-        let { activeSubGenome, activeChromosome, actions } = this.props, geneData = [];
+        let { activeSubGenome, activeChromosome, actions } = this.props;
 
+        let geneData = [];
         // Turn loader onON
         this.setState({ 'loader': true });
 
@@ -56,10 +56,6 @@ class Dashboard extends Component {
                     };
                     // group the array by Chromosome
                 }), (e) => e.Chromosome);
-
-
-                debugger;
-
                 return getFile('data/AT.txt');
             })
             .then((rawData) => {
@@ -98,9 +94,9 @@ class Dashboard extends Component {
                 // Dumping original data to window so that it can be used later on
                 window.triadBrowserStore = { 'chromosomeData': originalChromosomeData, 'genomeData': originalGenomeData };
 
-                actions.setDefaultData(chromosomeData, genomeData);
+                actions.setDefaultData(chromosomeData, genomeData, geneData);
                 // Set the data onto the state
-                this.setState({ subGenomes, chromosomes, geneData });
+                this.setState({ subGenomes, chromosomes });
             })
             .catch(() => {
                 alert("Sorry there was an error in fetching and parsing the file");
@@ -112,10 +108,9 @@ class Dashboard extends Component {
 
     render() {
 
-        const { genomeData, chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region } = this.props;
+        const { genomeData, chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region, geneData } = this.props;
 
-        const { loader = false, chromosomes = [], subGenomes = [],
-            geneData = {} } = this.state;
+        const { loader = false, chromosomes = [], subGenomes = [] } = this.state;
 
         const chartScale = scaleLinear()
             .domain([0, chromosomeData.length - 1])
@@ -160,12 +155,11 @@ class Dashboard extends Component {
                                     chartScale={chartScale} />
                                 <SubRegionMap
                                     subGenomes={subGenomes}
+                                    activeChromosome={activeChromosome}
                                     subRegionData={innerTriadData}
                                     chartScale={innerChartScale}
                                 />
-                                <GeneRefMap
-                                    geneData={geneData[activeChromosome.toLocaleLowerCase()] || []}
-                                />
+                                <GeneRefMap />
                             </div>
                             : <h2>Sorry the data file is empty.</h2>}
                     </div>}
@@ -190,6 +184,7 @@ function mapStateToProps(state) {
         // fill in with props that you need to read from state
         genomeData: state.genome.genomeData,
         chromosomeData: state.genome.chromosomeData,
+        geneData: state.genome.geneData,
         activeSubGenome: state.oracle.activeSubGenome,
         activeChromosome: state.oracle.activeChromosome,
         isTooltipVisible: state.oracle.isTooltipVisible,

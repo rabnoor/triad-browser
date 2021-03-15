@@ -40,11 +40,12 @@ export function setGenomeData(activeSubGenome, activeChromosome) {
     };
 }
 
-
-export function setDefaultData(chromosomeData, genomeData) {
+export function setDefaultData(chromosomeData, genomeData, geneData) {
     return dispatch => {
         dispatch({ type: types.SET_CHROMOSOME_DATA, chromosomeData });
         dispatch({ type: types.SET_GENOME_DATA, genomeData });
+        dispatch({ type: types.SET_GENE_DATA, geneData });
+
     };
 }
 

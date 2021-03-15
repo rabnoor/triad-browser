@@ -13,10 +13,10 @@ class GeneRefMap extends Component {
 
     drawChart = () => {
 
-        const { geneData = [], activeGenes = [] } = this.props;
-
+        const { geneData = [], activeGenes = [], activeChromosome = ''} = this.props;
+        let tempData = geneData[activeChromosome.toLocaleLowerCase()] || []; 
         // Start drawing the gene map here 
-        const sortedGeneData = _.sortBy(geneData, (d) => d.start);
+        const sortedGeneData = _.sortBy(tempData, (d) => d.start);
 
         // The genomic scale runs from starting coordinate 
         // of the first gene to ending coordinate of the last gene 
@@ -59,7 +59,9 @@ class GeneRefMap extends Component {
 function mapStateToProps(state) {
     return {
         // fill in with props that you need to read from state
-        activeGenes: state.oracle.activeGenes
+        activeGenes: state.oracle.activeGenes,
+        activeChromosome: state.oracle.activeChromosome,
+        geneData: state.genome.geneData,
     };
 }
 
