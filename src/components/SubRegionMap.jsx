@@ -171,13 +171,13 @@ class SubRegionMap extends Component {
 
     render() {
         let { enableSelectionRegion = false } = this.state;
-        const { subGenomes = [] } = this.props;
+        const { subGenomes = [], activeChromosome = ''} = this.props;
         return (
             <div style={{ 'width': CHART_WIDTH }} className="triad-stack-container">
                 <div className='m-b'>
                     <TriadLegend
                         subGenomes={subGenomes} />
-                    <h4 className='chart-title'>Sub Region</h4>
+                    <h4 className='chart-title'>Sub Region ({activeChromosome})</h4>
                     <span className='switch-container'>
                         <div className='switch-inner'>
                             <label htmlFor="material-switch-norm">
