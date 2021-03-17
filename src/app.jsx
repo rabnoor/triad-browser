@@ -1,9 +1,13 @@
 /*global $*/
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { ChromosomeView, GenomeView} from './components';
+import { Container } from './components';
+import ChromosomePage from './pages/ChromosomePage';
+import GenomePage from './pages/GenomePage';
 import configureStore from './redux/store/configureStore';
 import { Provider } from 'react-redux';
+import { Router, Route, IndexRoute, hashHistory } from 'react-router';
+
 
 //Root sass file for webpack to compile
 import './sass/main.scss';
@@ -16,9 +20,15 @@ class App extends Component {
 
   render() {
     return (
-      <Provider store={store} >
-        <GenomeView />
-      </Provider>)
+      <Provider store={store}>
+        <Router history={hashHistory}>
+          <Route path='/' component={Container}>
+            <IndexRoute component={ChromosomePage} />
+            <Route path='genome-view' component={GenomePage} />
+          </Route>
+        </Router>
+      </Provider>
+    )
   }
 }
 

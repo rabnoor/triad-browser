@@ -4,17 +4,13 @@ import { bindActionCreators } from 'redux';
 import Loader from 'react-loading';
 import { getFile } from '../utils/fetchData';
 import _ from 'lodash';
-import ChromosomeMap from './ChromosomeMap';
-import SubRegionMap from './SubRegionMap';
-import FilterPanel from './FilterPanel';
-import TriadGenomeViewMap from './TriadGenomeViewMap';
-import Tooltip from './Tooltip';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
 import { setGenomeData, setChromosomeData, setDefaultData, setRegion } from '../redux/actions/actions';
-import GeneRefMap from './GeneRefMap';
+import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeViewMap, Tooltip, GeneRefMap } from '../components';
 
-class GenomeView extends Component {
+
+class GenomePage extends Component {
 
     constructor(props) {
         super(props)
@@ -108,7 +104,7 @@ class GenomeView extends Component {
 
     render() {
 
-        const { genomeData, chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region, geneData } = this.props;
+        const { genomeData, chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region } = this.props;
 
         const { loader = false, chromosomes = [], subGenomes = [] } = this.state;
 
@@ -193,7 +189,7 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(GenomeView);
+export default connect(mapStateToProps, mapDispatchToProps)(GenomePage);
 
 
 

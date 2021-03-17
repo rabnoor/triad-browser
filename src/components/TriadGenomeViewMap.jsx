@@ -38,9 +38,6 @@ export default class TriadGenomeViewMap extends Component {
                 const scale = CreateScale(dataPoint, CHART_WIDTH);
                 const padding_from_left = scale(stackIndex);
 
-                console.log(scale);
-                console.log(padding_from_left)
-
                 _.map(d, (x, stackIndex2) => {
                     context.beginPath();
                     context.strokeStyle = schemeTableau10[stackIndex2];
@@ -53,24 +50,18 @@ export default class TriadGenomeViewMap extends Component {
     }
 
     render() {
-        const { genomeData = [], chromosomes = [], activeChromosome, subGenomes = [], } = this.props;
+        const { subGenomes = [] } = this.props;
 
         return (
-            <div className="view-finder-container">
-                <canvas className="viewfinder" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
+            <div className="genomemap-container">
+                <div className="text-center">
+                    <TriadLegend
+                        subGenomes={subGenomes} />
+                    <h4 className='text-primary chart-title'>Genome</h4>
+                    <canvas className="genomemap-canvas-single" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
+                </div>
             </div>
         );
-        
-        // return (
-        //     <div className='genomemap-container'>
-        //         <div className="text-center">
-        //             <TriadLegend
-        //                 subGenomes={subGenomes} />
-        //             <h4 className='text-primary chart-title'>Genome</h4>
-        //         </div>
-        //         <canvas className='genomemap-canvas' width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas }}/>
-        //     </div>
-        // );
     }
 }
 

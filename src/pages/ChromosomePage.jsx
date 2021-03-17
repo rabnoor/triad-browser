@@ -4,17 +4,13 @@ import { bindActionCreators } from 'redux';
 import Loader from 'react-loading';
 import { getFile } from '../utils/fetchData';
 import _ from 'lodash';
-import ChromosomeMap from './ChromosomeMap';
-import SubRegionMap from './SubRegionMap';
-import FilterPanel from './FilterPanel';
-import TriadGenomeMap from './TriadGenomeMap';
-import Tooltip from './Tooltip';
+import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeMap, Tooltip, GeneRefMap } from '../components';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
 import { setGenomeData, setChromosomeData, setDefaultData, setRegion } from '../redux/actions/actions';
-import GeneRefMap from './GeneRefMap';
 
-class ChromosomeView extends Component {
+
+class ChromosomePage extends Component {
 
     constructor(props) {
         super(props)
@@ -108,7 +104,7 @@ class ChromosomeView extends Component {
 
     render() {
 
-        const { genomeData, chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region, geneData } = this.props;
+        const { genomeData, chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region } = this.props;
 
         const { loader = false, chromosomes = [], subGenomes = [] } = this.state;
 
@@ -126,7 +122,6 @@ class ChromosomeView extends Component {
         const innerChartScale = scaleLinear()
             .domain([0, innerTriadData.length - 1])
             .range([0, CHART_WIDTH]);
-
 
         // set the dimensions of the graph
         return (
@@ -193,7 +188,7 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChromosomeView);
+export default connect(mapStateToProps, mapDispatchToProps)(ChromosomePage);
 
 
 

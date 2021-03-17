@@ -13,8 +13,8 @@ class GeneRefMap extends Component {
 
     drawChart = () => {
 
-        const { geneData = [], activeGenes = [], activeChromosome = ''} = this.props;
-        let tempData = geneData[activeChromosome.toLocaleLowerCase()] || []; 
+        const { geneData = [], activeGenes = [], activeChromosome = '' } = this.props;
+        let tempData = geneData[activeChromosome.toLocaleLowerCase()] || [];
         // Start drawing the gene map here 
         const sortedGeneData = _.sortBy(tempData, (d) => d.start);
 
@@ -48,7 +48,7 @@ class GeneRefMap extends Component {
 
     render() {
         return (
-            <div style={{ 'width': CHART_WIDTH }} className="triad-stack-container">
+            <div className="gene-ref-map" style={{ 'width': CHART_WIDTH }}>
                 <h4 className='chart-title m-t'>Reference Gene Map</h4>
                 <canvas className="gene-canvas" width={CHART_WIDTH} height={60} ref={(el) => { this.geneCanvas = el }} > </canvas>
             </div>

@@ -2,12 +2,15 @@
 // import vendors
 @import "vendor/toolkit";
 // import components- contains each self-contained component in its own .scss partial
-@import "components/dashboard";
 @import "components/filterpanel";
-@import "components/triadStackedMap";
+@import "components/triadstackedmap";
 @import "components/triadgenomemap";
 @import "components/triadlegend";
 @import "components/subregionmap";
+@import "components/navbar";
+@import "components/container";
+@import "components/generefmap";
+
 
 .graph-tooltip {
     position: absolute;
@@ -27,4 +30,27 @@
 .gene-canvas {
     margin-top: 5px;
     border: 2px solid white;
+}
+
+.triad-browser-mount {
+    min-height: 1000px;
+}
+
+.dashboard-root {
+    padding-top: 10px;
+    padding-bottom: 30px;
+    background-color: #252830;
+
+    .loading-spinner {
+        margin: 100px auto;
+    }
+
+    .chart-title {
+        display: inline-block;
+        margin: 10px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: bolder;
+        color: #ffffff;
+    }
 }
