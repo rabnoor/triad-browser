@@ -16,6 +16,7 @@ class GenomePage extends Component {
         super(props)
         this.state = {
             loader: false,
+            hideChromosome: true,
             subGenomes: [],
             chromosomes: [],
         }
@@ -106,7 +107,7 @@ class GenomePage extends Component {
 
         const { genomeData, chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region } = this.props;
 
-        const { loader = false, chromosomes = [], subGenomes = [] } = this.state;
+        const { loader = false, chromosomes = [], subGenomes = [], hideChromosome = true } = this.state;
 
         const chartScale = scaleLinear()
             .domain([0, chromosomeData.length - 1])
@@ -147,11 +148,13 @@ class GenomePage extends Component {
                                 <ChromosomeMap
                                     subGenomes={subGenomes}
                                     activeChromosome={activeChromosome}
+                                    hideChromosome={hideChromosome}
                                     chromosomeData={chromosomeData}
                                     chartScale={chartScale} />
                                 <SubRegionMap
                                     subGenomes={subGenomes}
                                     activeChromosome={activeChromosome}
+                                    hideChromosome={hideChromosome}
                                     subRegionData={innerTriadData}
                                     chartScale={innerChartScale}
                                 />

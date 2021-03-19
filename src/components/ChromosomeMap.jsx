@@ -109,13 +109,16 @@ class ChromosomeMap extends Component {
     }
 
     render() {
-        const { activeChromosome = '', subGenomes = [] } = this.props;
+        const { activeChromosome = '', subGenomes = [], hideChromosome = false } = this.props;
+
+        // console.log(hideChromosome);
 
         return (
             <div style={{ 'width': CHART_WIDTH }} className="triad-stack-container">
                 <TriadLegend
                     subGenomes={subGenomes} />
-                <h4 className='text-primary chart-title'>Chromosome ({activeChromosome})</h4>
+                {hideChromosome == true ?
+                        <h4 className='chart-title'>Subregion</h4> : <h4 className='chart-title'>Chromosome ({activeChromosome})</h4> }
                 <div style={{ 'width': CHART_WIDTH }}
                     className='view-finder-wrapper'>
                     <div id="view-finder-window"
