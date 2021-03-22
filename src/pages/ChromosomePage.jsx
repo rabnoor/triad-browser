@@ -107,7 +107,6 @@ class ChromosomePage extends Component {
 
         const { genomeData, chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region } = this.props;
 
-
         const { loader = false, chromosomes = [], subGenomes = [], hideChromosome = false } = this.state;
 
         const chartScale = scaleLinear()

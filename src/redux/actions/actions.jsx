@@ -53,6 +53,10 @@ export function setRegion(region) {
     return ({ type: types.SET_REGION, region });
 }
 
+export function setGenomeRegion(genomeRegion) {
+    return ({ type: types.SET_GENOME_REGION, genomeRegion })
+}
+
 export function setActiveGenes(activeGenes) {
     return ({ type: types.SET_ACTIVE_GENES, activeGenes });
 }

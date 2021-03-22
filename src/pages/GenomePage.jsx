@@ -105,7 +105,7 @@ class GenomePage extends Component {
 
     render() {
 
-        const { genomeData, chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region } = this.props;
+        const { genomeData, chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region, genomeRegion } = this.props;
 
         const { loader = false, chromosomes = [], subGenomes = [], hideChromosome = true } = this.state;
 
@@ -113,13 +113,20 @@ class GenomePage extends Component {
             .domain([0, chromosomeData.length - 1])
             .range([0, CHART_WIDTH]);
 
-        let { start, end } = region;
-
-        if (end == 0) {
-            end = Math.round(chartScale.invert(50));
+        if (region.end == 0) {
+            region.end = Math.round(chartScale.invert(50));
         }
 
-        const innerTriadData = chromosomeData.slice(start, end);
+        if (genomeRegion.end == 0) {
+            genomeRegion.end = Math.round(chartScale.invert(50));
+        }
+
+        const innerGenomeData = chromosomeData.slice(genomeRegion.start, genomeRegion.end);
+        const innerGenomeChartScale = scaleLinear()
+            .domain([0, innerGenomeData.length - 1])
+            .range([0, CHART_WIDTH]);
+
+        const innerTriadData = chromosomeData.slice(region.start, region.end);
         const innerChartScale = scaleLinear()
             .domain([0, innerTriadData.length - 1])
             .range([0, CHART_WIDTH]);
@@ -149,8 +156,8 @@ class GenomePage extends Component {
                                     subGenomes={subGenomes}
                                     activeChromosome={activeChromosome}
                                     hideChromosome={hideChromosome}
-                                    chromosomeData={chromosomeData}
-                                    chartScale={chartScale} />
+                                    chromosomeData={innerGenomeData}
+                                    chartScale={innerGenomeChartScale} />
                                 <SubRegionMap
                                     subGenomes={subGenomes}
                                     activeChromosome={activeChromosome}
@@ -188,7 +195,8 @@ function mapStateToProps(state) {
         activeChromosome: state.oracle.activeChromosome,
         isTooltipVisible: state.oracle.isTooltipVisible,
         tooltipData: state.oracle.tooltipData,
-        region: state.oracle.region
+        region: state.oracle.region,
+        genomeRegion: state.oracle.genomeRegion,
     };
 }
 
