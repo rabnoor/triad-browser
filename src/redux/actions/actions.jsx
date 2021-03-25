@@ -32,7 +32,7 @@ export function setGenomeData(activeSubGenome, activeChromosome) {
             genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => d[activeSubGenome])
         });
         chromosomeData = genomeData[activeChromosome];
-    } else {
+    } else if (activeSubGenome.includes('%')) {
         let temp = activeSubGenome.split(' ');
         
         if (temp[0] == "SG1" && temp[2] == "SG2"){
@@ -49,10 +49,17 @@ export function setGenomeData(activeSubGenome, activeChromosome) {
                 );  
             });
             chromosomeData = genomeData[activeChromosome];
-        } else {
+        } else if (temp[0] == "SG1" && temp[2] == "SG3"){
             _.map(_.keys(genomeData), (chromosome) => {
                 genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => 
                     d.SG1 >= 30.0 && d.SG3 >= 30
+                );  
+            });
+            chromosomeData = genomeData[activeChromosome];
+        } else {
+            _.map(_.keys(genomeData), (chromosome) => {
+                genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => 
+                    d.SG1 >= 30.0 && d.SG2 >= 30 && d.SG3 >= 30
                 );  
             });
             chromosomeData = genomeData[activeChromosome];
