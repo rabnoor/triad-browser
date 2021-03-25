@@ -14,7 +14,11 @@ export default class FilterPanel extends Component {
             return { label: subGenome, value: subGenome }
         });
 
-        options.unshift({label: 'N/A', value: 'N/A'})
+        options.unshift({label: 'N/A', value: 'N/A'});
+        options.push({label: 'SG1 + SG2 > 30%', value: 'SG1 + SG2 > 30%' });
+        options.push({label: 'SG2 + SG3 > 30%', value: 'SG2 + SG3 > 30%' })
+        options.push({label: 'SG1 + SG3 > 30%', value: 'SG1 + SG3 > 30%' })
+
 
         let defaultActiveSubGenome = { 'label': activeSubGenome, 'value': activeSubGenome };
 

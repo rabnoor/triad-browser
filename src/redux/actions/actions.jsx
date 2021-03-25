@@ -1,5 +1,6 @@
 import * as types from './actionTypes';
 import _ from 'lodash';
+import { active } from 'd3-transition';
 
 export function showTooltip(isTooltipVisible, tooltipData) {
     return dispatch => {
@@ -26,11 +27,36 @@ export function setGenomeData(activeSubGenome, activeChromosome) {
 
     let { chromosomeData, genomeData } = _.cloneDeep(window.triadBrowserStore);
 
-    if (activeSubGenome != "N/A") {
+    if (activeSubGenome != "N/A" && !activeSubGenome.includes('%')) {
         _.map(_.keys(genomeData), (chromosome) => {
             genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => d[activeSubGenome])
         });
         chromosomeData = genomeData[activeChromosome];
+    } else {
+        let temp = activeSubGenome.split(' ');
+        
+        if (temp[0] == "SG1" && temp[2] == "SG2"){
+            _.map(_.keys(genomeData), (chromosome) => {
+                genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => 
+                    d.SG1 >= 30.0 && d.SG2 >= 30
+                );  
+            });
+            chromosomeData = genomeData[activeChromosome];
+        } else if (temp[0] == "SG2" && temp[2] == "SG3") {
+            _.map(_.keys(genomeData), (chromosome) => {
+                genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => 
+                    d.SG2 >= 30.0 && d.SG3 >= 30
+                );  
+            });
+            chromosomeData = genomeData[activeChromosome];
+        } else {
+            _.map(_.keys(genomeData), (chromosome) => {
+                genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) => 
+                    d.SG1 >= 30.0 && d.SG3 >= 30
+                );  
+            });
+            chromosomeData = genomeData[activeChromosome];
+        }
     }
 
     return dispatch => {

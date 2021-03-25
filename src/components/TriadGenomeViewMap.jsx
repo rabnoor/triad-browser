@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { schemeTableau10, scaleLinear } from 'd3';
 import TriadLegend from './TriadLegend';
 import { connect, bindActionCreators} from 'react-redux';
+import { setGenomeRegion } from '../redux/actions/actions';
 
 
 
