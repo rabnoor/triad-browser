@@ -44,7 +44,7 @@ class SubRegionMap extends Component {
         actions.showTooltip(true, {
             'x': event.pageX + 200 > pageWidth ? event.pageX - 200 : event.pageX + 25,
             'y': event.pageY - 50,
-            'gene': dataPoint.Gene,
+            'gene': dataPoint.gene,
             'SG1': Math.round(dataPoint['SG1']) + '%',
             'SG2': Math.round(dataPoint['SG2']) + '%',
             'SG3': Math.round(dataPoint['SG3']) + '%'
@@ -204,7 +204,7 @@ class SubRegionMap extends Component {
                 </div>
                 <div style={{ 'width': CHART_WIDTH }}
                     className={'gene-finder-wrapper ' + (enableSelectionRegion ? '' : 'hide')}>
-                    <div id="gene-finder-window"
+                    <div  className='variable-window' id="gene-finder-window"
                         style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
                     </div>
                 </div>

@@ -121,7 +121,7 @@ class ChromosomeMap extends Component {
                         <h4 className='chart-title'>Subregion</h4> : <h4 className='chart-title'>Chromosome ({activeChromosome})</h4> }
                 <div style={{ 'width': CHART_WIDTH }}
                     className='view-finder-wrapper'>
-                    <div id="view-finder-window"
+                    <div  className='variable-window' id="view-finder-window"
                         style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
                     </div>
                 </div>

@@ -4,8 +4,10 @@ import { clearAndGetContext } from '../utils/canvasUtilities';
 import _ from 'lodash';
 import { schemeTableau10, scaleLinear } from 'd3';
 import TriadLegend from './TriadLegend';
-import { connect, bindActionCreators} from 'react-redux';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { setGenomeRegion } from '../redux/actions/actions';
+import interact from 'interactjs';
 
 
 
@@ -18,42 +20,40 @@ class TriadGenomeViewMap extends Component {
     drawChart = () => {
         const { genomeData = [], subGenomes = [] } = this.props;
 
-        debugger;
+        let tempGenomeData = _.reduce(_.keys(genomeData).sort(), (acc, value) => [...acc, ...genomeData[value]], []);
 
-        let overallSize = 0;
+        console.log(tempGenomeData);
+
         let context = clearAndGetContext(this.canvas);
 
-        let overallData = _.map(genomeData, (data) => {
-            let chartData = _.map(data, (dataPoint) => {
-                let values = _.map(subGenomes, (d) => dataPoint[d]);
-                return _.map(values, (d, i) => _.sum(values.slice(0, i + 1)))
-            });
-            overallSize += chartData.length;
-            return chartData;
-        })
+        let chartData = _.map(tempGenomeData, (dataPoint) => {
+            let values = _.map(subGenomes, (d) => dataPoint[d]);
+            return _.map(values, (d, i) => _.sum(values.slice(0, i + 1)))
+        });
+
+        console.log(chartData);
 
         this.attachResizing();
 
-        let yMax = _.max(_.max(_.map(overallData, (d) => _.max(d))));
+        let yMax = _.max(_.map(chartData, (d) => _.max(d)));
 
         let scaleFactor = CHART_HEIGHT / yMax;
 
-        context.lineWidth = CHART_WIDTH / overallSize;
+        context.lineWidth = CHART_WIDTH / chartData.length;
 
-        _.map(overallData, (dataPoint, dataIndex) => {
+        const scale = CreateScale(chartData, CHART_WIDTH);
+
+        _.map(chartData, (dataPoint, dataIndex) => {
+
+            const padding_from_left = scale(dataIndex);
+
             _.map(dataPoint, (d, stackIndex) => {
-
-                const scale = CreateScale(dataPoint, CHART_WIDTH);
-                const padding_from_left = scale(stackIndex);
-
-                _.map(d, (x, stackIndex2) => {
                     context.beginPath();
-                    context.strokeStyle = schemeTableau10[stackIndex2];
-                    context.moveTo(padding_from_left, CHART_HEIGHT - (stackIndex2 == 0 ? 0 : d[stackIndex2 - 1] * scaleFactor));
-                    context.lineTo(padding_from_left, CHART_HEIGHT - (d[stackIndex2] * scaleFactor));
+                    context.strokeStyle = schemeTableau10[stackIndex];
+                    context.moveTo(padding_from_left, CHART_HEIGHT - (stackIndex == 0 ? 0 : dataPoint[stackIndex - 1] * scaleFactor));
+                    context.lineTo(padding_from_left, CHART_HEIGHT - (dataPoint[stackIndex] * scaleFactor));
                     context.stroke();
-                });
-            });
+            })
         });
     }
 
@@ -61,7 +61,7 @@ class TriadGenomeViewMap extends Component {
 
         const { chartScale, actions } = this.props;
 
-        interact('#view-finder-window')
+        interact('#genome-finder-window')
             .draggable({
                 inertia: true,
                 listeners: {
@@ -119,19 +119,17 @@ class TriadGenomeViewMap extends Component {
         const { subGenomes = [] } = this.props;
 
         return (
-            <div className="genomemap-container">
-                <div className="text-center">
+            <div style={{ 'width': CHART_WIDTH }} className="triad-stack-container">
                     <TriadLegend
                         subGenomes={subGenomes} />
                     <h4 className='text-primary chart-title'>Genome</h4>
                     <div style={{ 'width': CHART_WIDTH }}
                         className='view-finder-wrapper'>
-                        <div id="view-finder-window"
+                        <div className='variable-window' id="genome-finder-window"
                             style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
                         </div>
                     </div>
-                    <canvas className="genomemap-canvas-single" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
-                </div>
+                    <canvas className="triad-stack-canvas" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
             </div>
         );
     }

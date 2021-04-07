@@ -6,7 +6,7 @@ import { getFile } from '../utils/fetchData';
 import _ from 'lodash';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
-import { setGenomeData, setChromosomeData, setDefaultData, setRegion } from '../redux/actions/actions';
+import { setGenomeData, setChromosomeData, setDefaultData, setGenomeViewData } from '../redux/actions/actions';
 import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeViewMap, Tooltip, GeneRefMap } from '../components';
 
 
@@ -23,7 +23,9 @@ class GenomePage extends Component {
     }
 
     onSubGenomeChange = (event) => {
-        this.props.actions.setGenomeData(event.value, this.props.activeChromosome);
+        let genomeData = _.reduce(_.keys(genomeData).sort(), (acc, value) => [...acc, ...genomeData[value]], []);
+
+        this.props.actions.setGenomeViewData(event.value, this.props.activeChromosome);
     }
 
     onChromosomeChange = (activeChromosome) => {
@@ -121,7 +123,9 @@ class GenomePage extends Component {
             genomeRegion.end = Math.round(chartScale.invert(50));
         }
 
-        const innerGenomeData = chromosomeData.slice(genomeRegion.start, genomeRegion.end);
+        let tempGenomeData = _.reduce(_.keys(genomeData).sort(), (acc, value) => [...acc, ...genomeData[value]], []);
+
+        const innerGenomeData = tempGenomeData.slice(genomeRegion.start, genomeRegion.end);
         const innerGenomeChartScale = scaleLinear()
             .domain([0, innerGenomeData.length - 1])
             .range([0, CHART_WIDTH]);
@@ -181,6 +185,7 @@ function mapDispatchToProps(dispatch) {
             setGenomeData,
             setChromosomeData,
             setDefaultData,
+            setGenomeViewData,
         }, dispatch)
     };
 }
