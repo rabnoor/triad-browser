@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeMap, Tooltip, GeneRefMap } from '../components';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
-import { setGenomeData, setChromosomeData, setDefaultData, setRegion } from '../redux/actions/actions';
+import { setGenomeData, setChromosomeData, setDefaultData, setRegion, setGenomeDataThreshold } from '../redux/actions/actions';
 
 
 class ChromosomePage extends Component {
@@ -24,6 +24,15 @@ class ChromosomePage extends Component {
 
     onSubGenomeChange = (event) => {
         this.props.actions.setGenomeData(event.value, this.props.activeChromosome);
+    }
+
+    onSubGenomeChangeThreshold = () => {
+        let SG1Value = parseFloat(document.getElementById("sortingPercent").value.slice(0, -1));
+        let SG2Value = parseFloat(document.getElementById("sortingPercent2").value.slice(0, -1));
+        let SG3Value = parseFloat(document.getElementById("sortingPercent3").value.slice(0, -1));
+        let SubGenomeThreshold = {"SG1": SG1Value, "SG2": SG2Value, "SG3": SG3Value};
+
+        this.props.actions.setGenomeDataThreshold(SubGenomeThreshold, this.props.activeChromosome);
     }
 
     onChromosomeChange = (activeChromosome) => {
@@ -133,7 +142,8 @@ class ChromosomePage extends Component {
                         <FilterPanel
                             activeSubGenome={activeSubGenome}
                             subGenomes={subGenomes}
-                            onSubGenomeChange={this.onSubGenomeChange} />
+                            onSubGenomeChange={this.onSubGenomeChange}
+                            onSubGenomeChangeThreshold={this.onSubGenomeChangeThreshold} />
                         {chromosomeData.length > 0 ?
                             <div>
                                 {/* code chunk to show tooltip*/}
@@ -171,6 +181,7 @@ function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators({
             setGenomeData,
+            setGenomeDataThreshold,
             setChromosomeData,
             setDefaultData,
         }, dispatch)

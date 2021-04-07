@@ -22,4 +22,16 @@
             width: 150px;
         }
     }
+    .text-container {
+        display: inline-block;
+        margin-right: 20px;
+    }
+    .inner-span-text {
+        padding: 3px;
+        display: block;
+    }
+    .percent-subgenome-text{
+        color: white;
+        padding-right: 5px;
+    }
 }
