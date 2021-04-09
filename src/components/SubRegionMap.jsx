@@ -41,10 +41,15 @@ class SubRegionMap extends Component {
         const referenceIndex = Math.floor(chartScale.invert(xPosition)),
             dataPoint = subRegionData[referenceIndex];
 
+        console.log(dataPoint);
+        debugger;
+
+        
+
         actions.showTooltip(true, {
             'x': event.pageX + 200 > pageWidth ? event.pageX - 200 : event.pageX + 25,
             'y': event.pageY - 50,
-            'gene': dataPoint.gene,
+            'gene': dataPoint.Gene,
             'SG1': Math.round(dataPoint['SG1']) + '%',
             'SG2': Math.round(dataPoint['SG2']) + '%',
             'SG3': Math.round(dataPoint['SG3']) + '%'
