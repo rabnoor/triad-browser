@@ -14,6 +14,19 @@ canvasUtilities.clearAndGetContext = function (canvas) {
     return context;
 }
 
+canvasUtilities.clearAndGetContextRemoveAlpha = function (canvas) {
+    let context = canvas.getContext('2d', { alpha: false });
+    // Store the current transformation matrix
+    context.save();
+    // Use the identity matrix while clearing the canvas
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    // Restore the transform
+    context.restore();
+    return context;
+}
+
+
 canvasUtilities.drawLines = function (context, lineCollection, color, lineWidth) {
     context.beginPath();
     context.lineWidth = lineWidth;

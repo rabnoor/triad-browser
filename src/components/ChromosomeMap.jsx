@@ -11,9 +11,27 @@ import TriadLegend from './TriadLegend';
 
 class ChromosomeMap extends Component {
 
-    componentDidMount() { this.drawChart() }
+    componentDidMount() {
+        const { chartScale, region } = this.props;
 
-    componentDidUpdate() { this.drawChart() }
+        let start = chartScale(region.start);
+        let end = chartScale(region.end);
+        let width = end - start;
+
+        var target = document.getElementById('view-finder-window');
+        target.setAttribute('data-x', start);
+
+        target.style.webkitTransform = target.style.transform = 'translate(' + start + 'px,' + '0px)';
+
+        target.style.width = width + 'px';
+
+        this.drawChart()
+    }
+
+    componentDidUpdate() {
+         
+        this.drawChart() 
+    }
 
     drawChart = () => {
 
@@ -113,15 +131,16 @@ class ChromosomeMap extends Component {
 
         // console.log(hideChromosome);
 
+
         return (
             <div style={{ 'width': CHART_WIDTH }} className="triad-stack-container">
                 <TriadLegend
                     subGenomes={subGenomes} />
                 {hideChromosome == true ?
-                        <h4 className='chart-title'>Subregion</h4> : <h4 className='chart-title'>Chromosome ({activeChromosome})</h4> }
+                    <h4 className='chart-title'>Subregion</h4> : <h4 className='chart-title'>Chromosome ({activeChromosome})</h4>}
                 <div style={{ 'width': CHART_WIDTH }}
                     className='view-finder-wrapper'>
-                    <div  className='variable-window' id="view-finder-window"
+                    <div className='variable-window' id="view-finder-window"
                         style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
                     </div>
                 </div>
@@ -138,15 +157,15 @@ function getStartAndEnd(target, chartScale) {
         width = +width.slice(0, -2);
     }
     else {
-        width = 50;
+        width = 150;
     }
     const start = Math.abs(xPosition), end = start + width;
+    console.log(start, end);
     return {
         'start': Math.round(chartScale.invert(start)),
         'end': Math.round(chartScale.invert(end))
     };
 }
-
 
 function mapDispatchToProps(dispatch) {
     return {

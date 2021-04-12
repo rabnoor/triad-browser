@@ -5,33 +5,68 @@
     padding: 25px 50px 0px 0px;
     display: inline-flex;
 
+    .switch-container {
+        background: #434857;
+        padding: 10px;
+        margin-left: 10px;
+        border-radius: 10px;
+        color: black;
+        .switch-inner {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 5px;
+            label {
+                margin-bottom: 0px !important;
+            }
+        }
+        .switch-label {
+            padding: 10px;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: white;
+        }
+    }
+
     .line-select {
         display: inline-block;
         margin-left: 15px;
     }
+
     .inner-span {
         color: #ffffff;
         display: inline-block;
+        margin: 25px auto;
         margin-right: 15px;
     }
+    
     .select-box {
         display: inline-block;
+        z-index: 100;
         width: 500px;
         margin-right: 10px;
         &.source {
             width: 150px;
         }
     }
+    
     .text-container {
-        display: inline-block;
+        margin: 25px auto;
         margin-right: 20px;
     }
+
     .inner-span-text {
         padding: 3px;
         display: block;
     }
+
     .percent-subgenome-text{
         color: white;
         padding-right: 5px;
     }
+
+    .sort-button {
+        margin: 5px auto;
+    }
+
 }
+

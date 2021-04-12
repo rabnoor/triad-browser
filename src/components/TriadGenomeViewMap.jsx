@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { CHART_WIDTH, CHART_HEIGHT } from '../utils/chartConstants';
-import { clearAndGetContext } from '../utils/canvasUtilities';
+import { clearAndGetContextRemoveAlpha } from '../utils/canvasUtilities';
 import _ from 'lodash';
 import { schemeTableau10, scaleLinear } from 'd3';
 import TriadLegend from './TriadLegend';
@@ -24,7 +24,7 @@ class TriadGenomeViewMap extends Component {
 
         console.log(tempGenomeData);
 
-        let context = clearAndGetContext(this.canvas);
+        let context = clearAndGetContextRemoveAlpha(this.canvas);
 
         let chartData = _.map(tempGenomeData, (dataPoint) => {
             let values = _.map(subGenomes, (d) => dataPoint[d]);
@@ -129,7 +129,7 @@ class TriadGenomeViewMap extends Component {
                             style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
                         </div>
                     </div>
-                    <canvas className="triad-stack-canvas" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
+                    <canvas color-rendering="optimizeQuality" className="triad-stack-canvas" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
             </div>
         );
     }

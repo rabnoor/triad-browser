@@ -30,7 +30,7 @@ class ChromosomePage extends Component {
         let SG1Value = parseFloat(document.getElementById("sortingPercent").value.slice(0, -1));
         let SG2Value = parseFloat(document.getElementById("sortingPercent2").value.slice(0, -1));
         let SG3Value = parseFloat(document.getElementById("sortingPercent3").value.slice(0, -1));
-        let SubGenomeThreshold = {"SG1": SG1Value, "SG2": SG2Value, "SG3": SG3Value};
+        let SubGenomeThreshold = { "SG1": SG1Value, "SG2": SG2Value, "SG3": SG3Value };
 
         this.props.actions.setGenomeDataThreshold(SubGenomeThreshold, this.props.activeChromosome);
     }
@@ -100,7 +100,19 @@ class ChromosomePage extends Component {
                 // Dumping original data to window so that it can be used later on
                 window.triadBrowserStore = { 'chromosomeData': originalChromosomeData, 'genomeData': originalGenomeData };
 
-                actions.setDefaultData(chromosomeData, genomeData, geneData);
+                const chartScale = scaleLinear()
+                    .domain([0, chromosomeData.length - 1])
+                    .range([0, CHART_WIDTH]);
+
+                // want window to be 50px, take 25 on either side
+                let genomeWindowRange = chartScale.invert(75);
+
+                let centerPoint = chromosomeData.length / 2;
+
+                let start = centerPoint - genomeWindowRange;
+                let end = centerPoint + genomeWindowRange;
+
+                actions.setDefaultData(chromosomeData, genomeData, geneData, {start, end});
                 // Set the data onto the state
                 this.setState({ subGenomes, chromosomes });
             })
@@ -125,7 +137,7 @@ class ChromosomePage extends Component {
         let { start, end } = region;
 
         if (end == 0) {
-            end = Math.round(chartScale.invert(50));
+            end = Math.round(chartScale.invert(150));
         }
 
         const innerTriadData = chromosomeData.slice(start, end);

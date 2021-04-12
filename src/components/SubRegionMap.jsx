@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import { CHART_WIDTH, CHART_HEIGHT } from '../utils/chartConstants';
 import { clearAndGetContext } from '../utils/canvasUtilities';
 import _ from 'lodash';
-import { schemeTableau10 } from 'd3';
+import { schemeTableau10, scaleLinear } from 'd3';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setActiveGenes, showTooltip } from '../redux/actions/actions';
 import interact from 'interactjs';
 import Switch from 'react-switch';
 import TriadLegend from './TriadLegend';
+
 
 
 class SubRegionMap extends Component {
@@ -18,13 +19,15 @@ class SubRegionMap extends Component {
         this.state = {
             enableSelectionRegion: false,
             region: {
-                start: 0,
-                end: 0,
+                start: 850,
+                end: 1000,
             },
         };
     }
 
-    componentDidMount() { this.drawChart() }
+    componentDidMount() {
+        this.drawChart()
+    }
 
     componentDidUpdate() { this.drawChart() }
 
@@ -41,11 +44,6 @@ class SubRegionMap extends Component {
         const referenceIndex = Math.floor(chartScale.invert(xPosition)),
             dataPoint = subRegionData[referenceIndex];
 
-        console.log(dataPoint);
-        debugger;
-
-        
-
         actions.showTooltip(true, {
             'x': event.pageX + 200 > pageWidth ? event.pageX - 200 : event.pageX + 25,
             'y': event.pageY - 50,
@@ -59,10 +57,32 @@ class SubRegionMap extends Component {
 
     onToggleRegionWindow = (enableSelectionRegion) => {
         // Remove active genes when switching modes
-        let regionWindow = document.getElementById("gene-finder-window");
+
+        const { subRegionData } = this.props;
+
+        const chartScale = scaleLinear()
+            .domain([0, subRegionData.length - 1])
+            .range([0, CHART_WIDTH]);
+
+        // // want window to be 50px, take 25 on either side
+        // let genomeWindowRange = chartScale.invert(75);
+
+        // let centerPoint = subRegionData.length;
+
+        var target = document.getElementById('gene-finder-window');
+
+        // let start = centerPoint - genomeWindowRange;
+        // let end = centerPoint + genomeWindowRange;
+        // let width = end - start;
+
+        // target.setAttribute('data-x', start);
+
+        // target.style.webkitTransform = target.style.transform = 'translate(' + start + 'px,' + '0px)';
+
+        // target.style.width = width + 'px';
 
         if (enableSelectionRegion) {
-            this.setRegion(getStartAndEnd(regionWindow, this.props.chartScale));
+            this.setRegion(getStartAndEnd(target, chartScale));
         }
         else {
             this.props.actions.setActiveGenes([]);
@@ -184,7 +204,7 @@ class SubRegionMap extends Component {
                     <TriadLegend
                         subGenomes={subGenomes} />
                     {hideChromosome == true ?
-                        <h4 className='chart-title'>Inner Subregion</h4> : <h4 className='chart-title'>Subregion ({activeChromosome})</h4> }
+                        <h4 className='chart-title'>Inner Subregion</h4> : <h4 className='chart-title'>Subregion ({activeChromosome})</h4>}
                     <span className='switch-container'>
                         <div className='switch-inner'>
                             <label htmlFor="material-switch-norm">
@@ -209,7 +229,7 @@ class SubRegionMap extends Component {
                 </div>
                 <div style={{ 'width': CHART_WIDTH }}
                     className={'gene-finder-wrapper ' + (enableSelectionRegion ? '' : 'hide')}>
-                    <div  className='variable-window' id="gene-finder-window"
+                    <div className='variable-window' id="gene-finder-window"
                         style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
                     </div>
                 </div>
@@ -230,7 +250,7 @@ function getStartAndEnd(target, chartScale) {
         width = +width.slice(0, -2);
     }
     else {
-        width = 50;
+        width = 150;
     }
     const start = Math.abs(xPosition), end = start + width;
     return {

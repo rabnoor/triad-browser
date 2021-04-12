@@ -1,6 +1,5 @@
 import * as types from './actionTypes';
 import _ from 'lodash';
-import { active } from 'd3-transition';
 
 export function showTooltip(isTooltipVisible, tooltipData) {
     return dispatch => {
@@ -99,11 +98,12 @@ export function setGenomeViewData(activeSubGenome) {
 }
 
 
-export function setDefaultData(chromosomeData, genomeData, geneData) {
+export function setDefaultData(chromosomeData, genomeData, geneData, region) {
     return dispatch => {
         dispatch({ type: types.SET_CHROMOSOME_DATA, chromosomeData });
         dispatch({ type: types.SET_GENOME_DATA, genomeData });
         dispatch({ type: types.SET_GENE_DATA, geneData });
+        dispatch({ type: types.SET_REGION, region });
     };
 }
 

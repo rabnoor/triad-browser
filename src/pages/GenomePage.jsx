@@ -92,7 +92,6 @@ class GenomePage extends Component {
 
                 // Dumping original data to window so that it can be used later on
                 window.triadBrowserStore = { 'chromosomeData': originalChromosomeData, 'genomeData': originalGenomeData };
-
                 actions.setDefaultData(chromosomeData, genomeData, geneData);
                 // Set the data onto the state
                 this.setState({ subGenomes, chromosomes });
