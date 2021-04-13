@@ -18,20 +18,14 @@ class TriadGenomeViewMap extends Component {
     componentDidUpdate() { this.drawChart(); }
 
     drawChart = () => {
-        const { genomeData = [], subGenomes = [] } = this.props;
-
-        let tempGenomeData = _.reduce(_.keys(genomeData).sort(), (acc, value) => [...acc, ...genomeData[value]], []);
-
-        console.log(tempGenomeData);
+        const { genomeViewData = [], subGenomes = [] } = this.props;
 
         let context = clearAndGetContextRemoveAlpha(this.canvas);
 
-        let chartData = _.map(tempGenomeData, (dataPoint) => {
+        let chartData = _.map(genomeViewData, (dataPoint) => {
             let values = _.map(subGenomes, (d) => dataPoint[d]);
             return _.map(values, (d, i) => _.sum(values.slice(0, i + 1)))
         });
-
-        console.log(chartData);
 
         this.attachResizing();
 
@@ -129,7 +123,7 @@ class TriadGenomeViewMap extends Component {
                             style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
                         </div>
                     </div>
-                    <canvas color-rendering="optimizeQuality" className="triad-stack-canvas" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
+                    <canvas colorRendering="optimizeQuality" className="triad-stack-canvas" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
             </div>
         );
     }

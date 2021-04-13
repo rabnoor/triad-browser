@@ -6,7 +6,7 @@ import { getFile } from '../utils/fetchData';
 import _ from 'lodash';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
-import { setGenomeData, setChromosomeData, setDefaultData, setGenomeViewData } from '../redux/actions/actions';
+import { setGenomeData, setChromosomeData, setDefaultData, setGenomeViewData, sortGenomeViewData } from '../redux/actions/actions';
 import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeViewMap, Tooltip, GeneRefMap } from '../components';
 
 
@@ -23,13 +23,8 @@ class GenomePage extends Component {
     }
 
     onSubGenomeChange = (event) => {
-        let genomeData = _.reduce(_.keys(genomeData).sort(), (acc, value) => [...acc, ...genomeData[value]], []);
-
-        this.props.actions.setGenomeViewData(event.value, this.props.activeChromosome);
-    }
-
-    onChromosomeChange = (activeChromosome) => {
-        this.props.actions.setChromosomeData(activeChromosome, this.props.genomeData);
+        console.log(event);
+        this.props.actions.sortGenomeViewData(event.value);
     }
 
     componentDidMount() {
@@ -90,9 +85,15 @@ class GenomePage extends Component {
 
                 let subGenomes = [...columns.slice(1)]
 
+                let tempGenomeData = _.reduce(_.keys(genomeData).sort(), (acc, value) => [...acc, ...genomeData[value]], []);
+                let genomeViewData = _.cloneDeep(tempGenomeData);
+                
+                console.log(genomeViewData);
+                console.log(tempGenomeData);
+
                 // Dumping original data to window so that it can be used later on
                 window.triadBrowserStore = { 'chromosomeData': originalChromosomeData, 'genomeData': originalGenomeData };
-                actions.setDefaultData(chromosomeData, genomeData, geneData);
+                actions.setDefaultData(chromosomeData, genomeData, geneData, genomeViewData);
                 // Set the data onto the state
                 this.setState({ subGenomes, chromosomes });
             })
@@ -106,12 +107,12 @@ class GenomePage extends Component {
 
     render() {
 
-        const { genomeData, chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region, genomeRegion } = this.props;
+        const { genomeData, chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region, genomeRegion, genomeViewData } = this.props;
 
         const { loader = false, chromosomes = [], subGenomes = [], hideChromosome = true } = this.state;
 
         const chartScale = scaleLinear()
-            .domain([0, chromosomeData.length - 1])
+            .domain([0, genomeViewData.length - 1])
             .range([0, CHART_WIDTH]);
 
         if (region.end == 0) {
@@ -122,9 +123,7 @@ class GenomePage extends Component {
             genomeRegion.end = Math.round(chartScale.invert(50));
         }
 
-        let tempGenomeData = _.reduce(_.keys(genomeData).sort(), (acc, value) => [...acc, ...genomeData[value]], []);
-
-        const innerGenomeData = tempGenomeData.slice(genomeRegion.start, genomeRegion.end);
+        const innerGenomeData = genomeViewData.slice(genomeRegion.start, genomeRegion.end);
         const innerGenomeChartScale = scaleLinear()
             .domain([0, innerGenomeData.length - 1])
             .range([0, CHART_WIDTH]);
@@ -150,7 +149,7 @@ class GenomePage extends Component {
                                 {/* code chunk to show tooltip*/}
                                 {isTooltipVisible && <Tooltip {...tooltipData} />}
                                 <TriadGenomeViewMap
-                                    genomeData={genomeData}
+                                    genomeViewData={genomeViewData}
                                     subGenomes={subGenomes}
                                     chartScale={chartScale}
                                     chromosomes={chromosomes}
@@ -185,6 +184,7 @@ function mapDispatchToProps(dispatch) {
             setChromosomeData,
             setDefaultData,
             setGenomeViewData,
+            sortGenomeViewData,
         }, dispatch)
     };
 }
@@ -193,6 +193,7 @@ function mapStateToProps(state) {
     return {
         // fill in with props that you need to read from state
         genomeData: state.genome.genomeData,
+        genomeViewData: state.genome.genomeViewData,
         chromosomeData: state.genome.chromosomeData,
         geneData: state.genome.geneData,
         activeSubGenome: state.oracle.activeSubGenome,
