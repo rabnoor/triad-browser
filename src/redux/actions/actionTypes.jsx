@@ -9,3 +9,4 @@ export const SET_REGION = 'SET_REGION';
 export const SET_ACTIVE_GENES = 'SET_ACTIVE_GENES';
 export const SET_GENE_DATA = 'SET_GENE_DATA';
 export const SET_GENOME_REGION = 'SET_GENOME_REGION';
+export const SET_ALL_DEFAULTS ='SET_ALL_DEFAULTS';

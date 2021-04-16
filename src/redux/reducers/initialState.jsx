@@ -8,6 +8,10 @@ export default {
       start: 0,
       end: 0,
     },
+    subRegion: {
+      start: 0,
+      end: 0,
+    },
     genomeRegion: {
       start: 0,
       end: 0,

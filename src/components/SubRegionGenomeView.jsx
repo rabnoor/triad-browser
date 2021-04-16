@@ -1,44 +1,36 @@
 import React, { Component } from 'react';
 import { CHART_WIDTH, CHART_HEIGHT } from '../utils/chartConstants';
-import { clearAndGetContextRemoveAlpha } from '../utils/canvasUtilities';
+import { clearAndGetContext } from '../utils/canvasUtilities';
 import _ from 'lodash';
-import { schemeTableau10, scaleLinear } from 'd3';
-import TriadLegend from './TriadLegend';
+import interact from 'interactjs';
+import { schemeTableau10 } from 'd3';
+import { setRegion } from '../redux/actions/actions';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { setGenomeRegion } from '../redux/actions/actions';
-import interact from 'interactjs';
+import TriadLegend from './TriadLegend';
 
+class SubRegionGenomeView extends Component {
 
+    componentDidMount() {
+        this.drawChart()
+    }
 
-class TriadGenomeViewMap extends Component {
-
-    componentDidMount() { 
-        // const { chartScale, region} = this.props;
-
-        // let start = chartScale(region.start);
-        // let end = chartScale(region.end);
-        // let width = end - start;
-
-        // var target = document.getElementById('view-finder-window');
-        // target.setAttribute('data-x', start);
-
-        // target.style.webkitTransform = target.style.transform = 'translate(' + start + 'px,' + '0px)';
-
-        // target.style.width = width + 'px';
-        this.drawChart();
-     }
-
-    componentDidUpdate() { this.drawChart(); }
+    componentDidUpdate() {
+         
+        this.drawChart() 
+    }
 
     drawChart = () => {
-        const { genomeViewData = [], subGenomes = [] } = this.props;
 
-        let context = clearAndGetContextRemoveAlpha(this.canvas);
+        const { chromosomeData = [], subGenomes = [], chartScale } = this.props;
+        let context = clearAndGetContext(this.canvas);
 
-        let chartData = _.map(genomeViewData, (dataPoint) => {
+        let chartData = _.map(chromosomeData, (dataPoint) => {
+
             let values = _.map(subGenomes, (d) => dataPoint[d]);
+
             return _.map(values, (d, i) => _.sum(values.slice(0, i + 1)))
+
         });
 
         this.attachResizing();
@@ -47,20 +39,18 @@ class TriadGenomeViewMap extends Component {
 
         let scaleFactor = CHART_HEIGHT / yMax;
 
-        context.lineWidth = CHART_WIDTH / chartData.length;
-
-        const scale = CreateScale(chartData, CHART_WIDTH);
+        context.lineWidth = CHART_WIDTH / chromosomeData.length;
 
         _.map(chartData, (dataPoint, dataIndex) => {
 
-            const padding_from_left = scale(dataIndex);
+            const padding_from_left = chartScale(dataIndex);
 
             _.map(dataPoint, (d, stackIndex) => {
-                    context.beginPath();
-                    context.strokeStyle = schemeTableau10[stackIndex];
-                    context.moveTo(padding_from_left, CHART_HEIGHT - (stackIndex == 0 ? 0 : dataPoint[stackIndex - 1] * scaleFactor));
-                    context.lineTo(padding_from_left, CHART_HEIGHT - (dataPoint[stackIndex] * scaleFactor));
-                    context.stroke();
+                context.beginPath();
+                context.strokeStyle = schemeTableau10[stackIndex];
+                context.moveTo(padding_from_left, CHART_HEIGHT - (stackIndex == 0 ? 0 : dataPoint[stackIndex - 1] * scaleFactor));
+                context.lineTo(padding_from_left, CHART_HEIGHT - (dataPoint[stackIndex] * scaleFactor));
+                context.stroke();
             })
         });
     }
@@ -69,7 +59,7 @@ class TriadGenomeViewMap extends Component {
 
         const { chartScale, actions } = this.props;
 
-        interact('#genome-finder-window')
+        interact('#view-finder-window')
             .draggable({
                 inertia: true,
                 listeners: {
@@ -85,7 +75,7 @@ class TriadGenomeViewMap extends Component {
                         }
                     },
                     end(event) {
-                        actions.setGenomeRegion(getStartAndEnd(event.target, chartScale))
+                        actions.setRegion(getStartAndEnd(event.target, chartScale))
                     }
                 },
             })
@@ -106,7 +96,7 @@ class TriadGenomeViewMap extends Component {
                         target.setAttribute('data-x', x);
                     },
                     end(event) {
-                        actions.setGenomeRegion(getStartAndEnd(event.target, chartScale))
+                        actions.setRegion(getStartAndEnd(event.target, chartScale))
                     }
                 },
                 modifiers: [
@@ -124,33 +114,27 @@ class TriadGenomeViewMap extends Component {
     }
 
     render() {
-        const { subGenomes = [] } = this.props;
+        const { activeChromosome = '', subGenomes = [], hideChromosome = false } = this.props;
+
+        // console.log(hideChromosome);
+
 
         return (
             <div style={{ 'width': CHART_WIDTH }} className="triad-stack-container">
-                    <TriadLegend
-                        subGenomes={subGenomes} />
-                    <h4 className='text-primary chart-title'>Genome</h4>
-                    <div style={{ 'width': CHART_WIDTH }}
-                        className='view-finder-wrapper'>
-                        <div className='variable-window' id="genome-finder-window"
-                            style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
-                        </div>
+                <TriadLegend
+                    subGenomes={subGenomes} />
+                {hideChromosome == true ?
+                    <h4 className='chart-title'>Subregion</h4> : <h4 className='chart-title'>Chromosome ({activeChromosome})</h4>}
+                <div style={{ 'width': CHART_WIDTH }}
+                    className='view-finder-wrapper'>
+                    <div className='variable-window' id="view-finder-window"
+                        style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
                     </div>
-                    <canvas colorRendering="optimizeQuality" className="triad-stack-canvas" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
+                </div>
+                <canvas className="triad-stack-canvas" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
             </div>
         );
     }
-}
-
-function ChartScale(genomeData, chromosomes, chromIndex) {
-    return Math.round((genomeData[chromosomes[chromIndex]].length / _.sum(_.map(genomeData, (genome) => genome.length)) * CHART_WIDTH));
-}
-
-function CreateScale(data, width) {
-    return scaleLinear()
-        .domain([0, data.length - 1])
-        .range([0, width]);
 }
 
 function getStartAndEnd(target, chartScale) {
@@ -163,6 +147,7 @@ function getStartAndEnd(target, chartScale) {
         width = 150;
     }
     const start = Math.abs(xPosition), end = start + width;
+    console.log(start, end);
     return {
         'start': Math.round(chartScale.invert(start)),
         'end': Math.round(chartScale.invert(end))
@@ -172,7 +157,7 @@ function getStartAndEnd(target, chartScale) {
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators({
-            setGenomeRegion,
+            setRegion,
         }, dispatch)
     };
 }
@@ -180,8 +165,8 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
     return {
         // fill in with props that you need to read from state
-        region: state.oracle.genomeRegion
+        region: state.oracle.region
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TriadGenomeViewMap);
+export default connect(mapStateToProps, mapDispatchToProps)(SubRegionGenomeView);

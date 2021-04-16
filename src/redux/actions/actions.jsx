@@ -74,8 +74,30 @@ export function setGenomeDataThreshold(activeSubGenome, activeChromosome) {
             );
         });
         chromosomeData = genomeData[activeChromosome];
+    } else if (activeSubGenome.SG1 > 0 && activeSubGenome.SG2 == 0 && activeSubGenome.SG3 == 0) {
+        _.map(_.keys(genomeData), (chromosome) => {
+            genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) =>
+                d.SG1 >= activeSubGenome.SG1
+            );
+        });
+        chromosomeData = genomeData[activeChromosome];
     }
-
+    else if (activeSubGenome.SG1 == 0 && activeSubGenome.SG2 > 0 && activeSubGenome.SG3 == 0) {
+        _.map(_.keys(genomeData), (chromosome) => {
+            genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) =>
+                d.SG2 >= activeSubGenome.SG2
+            );
+        });
+        chromosomeData = genomeData[activeChromosome];
+    }
+    else if (activeSubGenome.SG1 == 0 && activeSubGenome.SG2 == 0 && activeSubGenome.SG3 > 0) {
+        _.map(_.keys(genomeData), (chromosome) => {
+            genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) =>
+                d.SG3 >= activeSubGenome.SG3
+            );
+        });
+        chromosomeData = genomeData[activeChromosome];
+    }
 
     return dispatch => {
         dispatch({ type: types.SET_CHROMOSOME_DATA, chromosomeData });
@@ -106,12 +128,23 @@ export function sortGenomeViewData(activeSubGenome) {
     };
 }
 
-export function setDefaultData(chromosomeData, genomeData, geneData, genomeViewData) {
+export function setDefaultDataWholeGenome(chromosomeData, genomeData, geneData, genomeViewData) {
     return dispatch => {
         dispatch({ type: types.SET_CHROMOSOME_DATA, chromosomeData });
         dispatch({ type: types.SET_GENOME_DATA, genomeData });
         dispatch({ type: types.SET_GENE_DATA, geneData });
         dispatch({ type: types.SET_GENOME_VIEW_DATA, genomeViewData });
+
+    };
+}
+
+
+export function setDefaultDataChromosome(chromosomeData, genomeData, geneData, region) {
+    return dispatch => {
+        dispatch({ type: types.SET_CHROMOSOME_DATA, chromosomeData });
+        dispatch({ type: types.SET_GENOME_DATA, genomeData });
+        dispatch({ type: types.SET_GENE_DATA, geneData });
+        dispatch({ type: types.SET_REGION, region });
     };
 }
 

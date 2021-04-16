@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeMap, Tooltip, GeneRefMap } from '../components';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
-import { setGenomeData, setChromosomeData, setDefaultData, setRegion, setGenomeDataThreshold } from '../redux/actions/actions';
+import { setGenomeData, setChromosomeData, setDefaultDataChromosome, setRegion, setGenomeDataThreshold } from '../redux/actions/actions';
 
 
 class ChromosomePage extends Component {
@@ -112,7 +112,7 @@ class ChromosomePage extends Component {
                 let start = centerPoint - genomeWindowRange;
                 let end = centerPoint + genomeWindowRange;
 
-                actions.setDefaultData(chromosomeData, genomeData, geneData, {start, end});
+                actions.setDefaultDataChromosome(chromosomeData, genomeData, geneData, {start, end});
                 // Set the data onto the state
                 this.setState({ subGenomes, chromosomes });
             })
@@ -135,6 +135,8 @@ class ChromosomePage extends Component {
             .range([0, CHART_WIDTH]);
 
         let { start, end } = region;
+
+        console.log(region);
 
         if (end == 0) {
             end = Math.round(chartScale.invert(150));
@@ -195,7 +197,7 @@ function mapDispatchToProps(dispatch) {
             setGenomeData,
             setGenomeDataThreshold,
             setChromosomeData,
-            setDefaultData,
+            setDefaultDataChromosome,
         }, dispatch)
     };
 }

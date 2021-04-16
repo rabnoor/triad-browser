@@ -6,8 +6,8 @@ import { getFile } from '../utils/fetchData';
 import _ from 'lodash';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
-import { setGenomeData, setChromosomeData, setDefaultData, setGenomeViewData, sortGenomeViewData } from '../redux/actions/actions';
-import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeViewMap, Tooltip, GeneRefMap } from '../components';
+import { setGenomeData, setChromosomeData, setDefaultDataWholeGenome, setGenomeViewData, sortGenomeViewData } from '../redux/actions/actions';
+import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeViewMap, Tooltip, GeneRefMap, SubRegionGenomeView } from '../components';
 
 
 class GenomePage extends Component {
@@ -88,12 +88,9 @@ class GenomePage extends Component {
                 let tempGenomeData = _.reduce(_.keys(genomeData).sort(), (acc, value) => [...acc, ...genomeData[value]], []);
                 let genomeViewData = _.cloneDeep(tempGenomeData);
                 
-                console.log(genomeViewData);
-                console.log(tempGenomeData);
-
                 // Dumping original data to window so that it can be used later on
                 window.triadBrowserStore = { 'chromosomeData': originalChromosomeData, 'genomeData': originalGenomeData };
-                actions.setDefaultData(chromosomeData, genomeData, geneData, genomeViewData);
+                actions.setDefaultDataWholeGenome(chromosomeData, genomeData, geneData, genomeViewData);
                 // Set the data onto the state
                 this.setState({ subGenomes, chromosomes });
             })
@@ -107,7 +104,7 @@ class GenomePage extends Component {
 
     render() {
 
-        const { genomeData, chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region, genomeRegion, genomeViewData } = this.props;
+        const { chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region, genomeRegion, genomeViewData } = this.props;
 
         const { loader = false, chromosomes = [], subGenomes = [], hideChromosome = true } = this.state;
 
@@ -154,7 +151,7 @@ class GenomePage extends Component {
                                     chartScale={chartScale}
                                     chromosomes={chromosomes}
                                     onChromosomeChange={this.onChromosomeChange} />
-                                <ChromosomeMap
+                                <SubRegionGenomeView
                                     subGenomes={subGenomes}
                                     activeChromosome={activeChromosome}
                                     hideChromosome={hideChromosome}
@@ -182,7 +179,7 @@ function mapDispatchToProps(dispatch) {
         actions: bindActionCreators({
             setGenomeData,
             setChromosomeData,
-            setDefaultData,
+            setDefaultDataWholeGenome,
             setGenomeViewData,
             sortGenomeViewData,
         }, dispatch)
