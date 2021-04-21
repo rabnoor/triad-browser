@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
 import { setGenomeData, setChromosomeData, setDefaultDataWholeGenome, setGenomeViewData, sortGenomeViewData } from '../redux/actions/actions';
-import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeViewMap, Tooltip, GeneRefMap, SubRegionGenomeView } from '../components';
+import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeViewMap, Tooltip, GeneRefMap, SubRegionGenomeView, setActiveSubGenome } from '../components';
 
 
 class GenomePage extends Component {
@@ -23,7 +23,6 @@ class GenomePage extends Component {
     }
 
     onSubGenomeChange = (event) => {
-        console.log(event);
         this.props.actions.sortGenomeViewData(event.value);
     }
 
@@ -68,6 +67,9 @@ class GenomePage extends Component {
                             return tempStore;
                         });
 
+                // actions.setActiveSubGenome("N/A");
+                activeSubGenome = "N/A";
+                
                 let genomeData = _.groupBy(records, (d) => d.activeChromosome);
                 let originalGenomeData = _.cloneDeep(genomeData);
 
@@ -87,10 +89,11 @@ class GenomePage extends Component {
 
                 let tempGenomeData = _.reduce(_.keys(genomeData).sort(), (acc, value) => [...acc, ...genomeData[value]], []);
                 let genomeViewData = _.cloneDeep(tempGenomeData);
-                
+
                 // Dumping original data to window so that it can be used later on
                 window.triadBrowserStore = { 'chromosomeData': originalChromosomeData, 'genomeData': originalGenomeData };
                 actions.setDefaultDataWholeGenome(chromosomeData, genomeData, geneData, genomeViewData);
+
                 // Set the data onto the state
                 this.setState({ subGenomes, chromosomes });
             })
@@ -98,7 +101,9 @@ class GenomePage extends Component {
                 alert("Sorry there was an error in fetching and parsing the file");
                 console.log('error');
             })
-            .finally(() => { this.setState({ 'loader': false }) });
+            .finally(() => { 
+                this.setState({ 'loader': false }) 
+            });
 
     }
 
@@ -182,6 +187,7 @@ function mapDispatchToProps(dispatch) {
             setDefaultDataWholeGenome,
             setGenomeViewData,
             sortGenomeViewData,
+            setActiveSubGenome,
         }, dispatch)
     };
 }

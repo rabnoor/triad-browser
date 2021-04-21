@@ -14,18 +14,25 @@ import interact from 'interactjs';
 class TriadGenomeViewMap extends Component {
 
     componentDidMount() { 
-        // const { chartScale, region} = this.props;
+        const { chartScale, genomeViewData = [] } = this.props;
 
-        // let start = chartScale(region.start);
-        // let end = chartScale(region.end);
-        // let width = end - start;
+        let genomeWindowRange = chartScale.invert(75);
 
-        // var target = document.getElementById('view-finder-window');
-        // target.setAttribute('data-x', start);
+        let centerPoint = genomeViewData.length / 2;
 
-        // target.style.webkitTransform = target.style.transform = 'translate(' + start + 'px,' + '0px)';
+        let start = centerPoint - genomeWindowRange;
+        let end = centerPoint + genomeWindowRange;
 
-        // target.style.width = width + 'px';
+        start = chartScale(start);
+        end = chartScale(end);
+        let width = end - start;
+
+        var target = document.getElementById('genome-finder-window');
+        target.setAttribute('data-x', start);
+
+        target.style.webkitTransform = target.style.transform = 'translate(' + start + 'px,' + '0px)';
+
+        target.style.width = width + 'px';
         this.drawChart();
      }
 

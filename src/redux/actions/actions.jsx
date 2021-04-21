@@ -163,3 +163,7 @@ export function setGenomeRegion(genomeRegion) {
 export function setActiveGenes(activeGenes) {
     return ({ type: types.SET_ACTIVE_GENES, activeGenes });
 }
+
+export function setActiveSubGenome(activeSubGenome) {
+    return ({ type: types.SET_ACTIVE_SUBGENOME, activeSubGenome })
+}

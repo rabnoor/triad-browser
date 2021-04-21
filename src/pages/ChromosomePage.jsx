@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeMap, Tooltip, GeneRefMap } from '../components';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
-import { setGenomeData, setChromosomeData, setDefaultDataChromosome, setRegion, setGenomeDataThreshold } from '../redux/actions/actions';
+import { setGenomeData, setChromosomeData, setDefaultDataChromosome, setRegion, setGenomeDataThreshold, setActiveSubGenome} from '../redux/actions/actions';
 
 
 class ChromosomePage extends Component {
@@ -80,6 +80,9 @@ class ChromosomePage extends Component {
                             return tempStore;
                         });
 
+                actions.setActiveSubGenome("N/A");
+                activeSubGenome = "N/A";
+
                 let genomeData = _.groupBy(records, (d) => d.activeChromosome);
                 let originalGenomeData = _.cloneDeep(genomeData);
 
@@ -113,6 +116,7 @@ class ChromosomePage extends Component {
                 let end = centerPoint + genomeWindowRange;
 
                 actions.setDefaultDataChromosome(chromosomeData, genomeData, geneData, {start, end});
+
                 // Set the data onto the state
                 this.setState({ subGenomes, chromosomes });
             })
@@ -135,8 +139,6 @@ class ChromosomePage extends Component {
             .range([0, CHART_WIDTH]);
 
         let { start, end } = region;
-
-        console.log(region);
 
         if (end == 0) {
             end = Math.round(chartScale.invert(150));
@@ -198,6 +200,7 @@ function mapDispatchToProps(dispatch) {
             setGenomeDataThreshold,
             setChromosomeData,
             setDefaultDataChromosome,
+            setActiveSubGenome,
         }, dispatch)
     };
 }
