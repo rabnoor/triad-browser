@@ -27,6 +27,7 @@ export default class FilterPanel extends Component {
         const { subGenomes = [], onSubGenomeChange, onSubGenomeChangeThreshold, activeSubGenome = '' } = this.props;
         const { showDropDown = false } = this.state;
 
+        // Create the dropdown menu options from the existing subGenomes
         let options = _.map(subGenomes, (subGenome) => {
             return { label: subGenome, value: subGenome }
         });

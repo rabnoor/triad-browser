@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
 import { setGenomeData, setChromosomeData, setDefaultDataWholeGenome, setGenomeViewData, sortGenomeViewData } from '../redux/actions/actions';
-import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeViewMap, Tooltip, GeneRefMap, SubRegionGenomeView, setActiveSubGenome } from '../components';
+import { SubRegionMap, FilterPanel, TriadGenomeViewMap, Tooltip, GeneRefMap, SubRegionGenomeView, setActiveSubGenome } from '../components';
 
 
 class GenomePage extends Component {
@@ -31,7 +31,8 @@ class GenomePage extends Component {
         let { activeSubGenome, activeChromosome, actions } = this.props;
 
         let geneData = [];
-        // Turn loader onON
+
+        // Turn loader on
         this.setState({ 'loader': true });
 
         getFile('data/AT_genes.gff')
@@ -67,9 +68,10 @@ class GenomePage extends Component {
                             return tempStore;
                         });
 
-                // actions.setActiveSubGenome("N/A");
+                // Set the current active subgenome to be nothing.
                 activeSubGenome = "N/A";
                 
+                // Group the data by the chromosome, make a deep clone of the data so we can go back to the "unsorted" data later.
                 let genomeData = _.groupBy(records, (d) => d.activeChromosome);
                 let originalGenomeData = _.cloneDeep(genomeData);
 
@@ -113,23 +115,27 @@ class GenomePage extends Component {
 
         const { loader = false, chromosomes = [], subGenomes = [], hideChromosome = true } = this.state;
 
+        // Create chart scale for TriadGenomeViewMap to allow proper visualization of the data
         const chartScale = scaleLinear()
             .domain([0, genomeViewData.length - 1])
             .range([0, CHART_WIDTH]);
 
+        // If the region end point is somehow at 0, move the end point 
         if (region.end == 0) {
-            region.end = Math.round(chartScale.invert(50));
+            region.end = Math.round(chartScale.invert(75));
         }
 
         if (genomeRegion.end == 0) {
-            genomeRegion.end = Math.round(chartScale.invert(50));
+            genomeRegion.end = Math.round(chartScale.invert(75));
         }
 
+        // Get data for SubRegionGenomeView and create a chart scale for it
         const innerGenomeData = genomeViewData.slice(genomeRegion.start, genomeRegion.end);
         const innerGenomeChartScale = scaleLinear()
             .domain([0, innerGenomeData.length - 1])
             .range([0, CHART_WIDTH]);
 
+        // Get data for SubRegionMap and create a chart scale for it
         const innerTriadData = chromosomeData.slice(region.start, region.end);
         const innerChartScale = scaleLinear()
             .domain([0, innerTriadData.length - 1])

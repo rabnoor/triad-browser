@@ -136,9 +136,6 @@ class SubRegionGenomeView extends Component {
     render() {
         const { activeChromosome = '', subGenomes = [], hideChromosome = false } = this.props;
 
-        // console.log(hideChromosome);
-
-
         return (
             <div style={{ 'width': CHART_WIDTH }} className="triad-stack-container">
                 <TriadLegend
