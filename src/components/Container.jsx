@@ -10,43 +10,13 @@ class Container extends Component {
         super(props);
     }
 
-    handleSubmit = () => {
-        let { connection, roomName, userName } = this.props;
-
-        if (connection) {
-            this.DisconnectFromRoom(roomName, userName);
-        } else {
-            let tempRoomName = document.getElementById("RoomName").value;
-            let tempUserName = document.getElementById("Username").value;
-            let Connection = true;
-            this.props.actions.setUsernameAndRoom(tempRoomName, tempUserName, Connection);
-    
-            this.ConnectToRoom(roomName, userName);
-        }
-    }
-
-    ConnectToRoom = (roomName, userName) => {
-        // code to connect to room
-        return;
-    }
-    
-    DisconnectFromRoom = (roomName, userName) => {
-        let Connection = false;
-        this.props.actions.disconnectFromRoom(Connection);
-        // Actual code to disconnect 
-        return;
-    }
-
     render() {
         let { connection } = this.props;
 
         return (
             <div id='app-container'>
                 {/* navbar content , common for entire application */}
-                <NavBar
-                    handleSubmit={this.handleSubmit}
-                    Disconnect={this.Disconnect}
-                    isConnected={connection} />
+                <NavBar/>
                 <div id='container-body'>
                     {this.props.children}
                 </div>
