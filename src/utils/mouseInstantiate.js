@@ -76,6 +76,41 @@ function connectUser() {
     });
 }
 
+// *****************************************************************************
+// Functions for user records
+// *****************************************************************************
+
+function createUser(user, id) {
+    // check whether user exists (i.e., a reconnect)
+    if (userNameMap.has(user.name)) {
+        // remap new id to user
+        userIDMap.set(id, user);
+        connectInParticipantList(id);
+        // TODO: remove old id (look through users by name)
+        // update user info in case anything's changed
+        updateUser(user, id);
+    } else {
+        // create new user object
+        userNameMap.set(user.name, user);
+        userIDMap.set(id, user);
+        createUserRepresentation(user, id);
+    }
+    // store my record for later reconnections
+    if (id == gt.id) {
+        myUserRecord = userIDMap.get(id);
+    }
+}
+
+function updateUser(delta, id) {
+    const user = userIDMap.get(id);
+    // update the map first
+    for (let key in delta) {
+        user[key] = delta[key];
+    }
+    // update the visual representations
+    updateUserRepresentation(user, delta, id);
+}
+
 
 // ------------------------------------------------------------
 
