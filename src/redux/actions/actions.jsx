@@ -148,6 +148,14 @@ export function setDefaultDataChromosome(chromosomeData, genomeData, geneData, r
     };
 }
 
+export function setUsernameAndRoom(RoomName, Username, Connection) {
+    return dispatch => {
+        dispatch({ type: types.SET_ROOM_NAME, RoomName });
+        dispatch({ type: types.SET_USER_NAME, Username });
+        dispatch({type: types.SET_CONNECTION_STATUS, Connection})
+    };
+}
+
 export function setGenomeViewData(genomeViewData) {
     return ({ type: types.SET_GENOME_VIEW_DATA, genomeViewData });
 }
@@ -166,4 +174,8 @@ export function setActiveGenes(activeGenes) {
 
 export function setActiveSubGenome(activeSubGenome) {
     return ({ type: types.SET_ACTIVE_SUBGENOME, activeSubGenome })
+}
+
+export function disconnectFromRoom(Connection) {
+    return ({type: types.SET_CONNECTION_STATUS, Connection})
 }

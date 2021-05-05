@@ -1,6 +1,8 @@
 /*global $*/
 import React, { Component } from 'react';
 import { Link } from 'react-router';
+import { Input } from 'semantic-ui-react'
+import { Button } from 'reactstrap';
 
 export default class NavBar extends Component {
 
@@ -9,6 +11,7 @@ export default class NavBar extends Component {
     }
 
     render() {
+        const { handleSubmit, isConnected = false, Disconnect} = this.props;
 
         return (
             <nav className="navbar navbar-inverse navbar-fixed-top">
@@ -32,6 +35,23 @@ export default class NavBar extends Component {
                                 <Link to='/genome-view'>
                                     Whole genome analysis
                                 </Link>
+                            </li>
+                            <li className='UserInput'>
+                                <Input id='RoomName' placeholder='Room Name' />
+                            </li>
+                            <li className='UserInput'>
+                                <Input id='Username' placeholder='Username' />
+                            </li>
+                            <li className='UserInput'>
+                                {isConnected ?
+                                    <Button className="sort-button" variant="primary" size="sm" onClick={handleSubmit}>
+                                        Disconnect
+                                    </Button> 
+                                    :
+                                    <Button className="sort-button" variant="primary" size="sm" onClick={handleSubmit}>
+                                        Connect
+                                    </Button>
+                                }
                             </li>
                         </ul>
                     </div>

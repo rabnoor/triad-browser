@@ -18,6 +18,12 @@ export default function oracleReducer(state = initialState.oracle, action) {
       return Object.assign({}, state, { 'activeGenes': [...action.activeGenes] })
     case types.SET_GENOME_REGION:
       return Object.assign({}, state, { 'genomeRegion': { ...action.genomeRegion } })
+    case types.SET_ROOM_NAME:
+      return Object.assign({}, state, { 'RoomName': action.RoomName })
+    case types.SET_USER_NAME:
+      return Object.assign({}, state, { 'Username': action.Username })
+    case types.SET_CONNECTION_STATUS:
+      return Object.assign({}, state, { 'Connection': action.Connection })
     default:
       return state;
   }

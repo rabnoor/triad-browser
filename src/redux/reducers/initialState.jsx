@@ -17,6 +17,9 @@ export default {
       end: 0,
     },
     activeGenes: [],
+    Username: '',
+    RoomName: '',
+    Connection: false,
   },
   genome: {
     chromosomeData: [],
