@@ -26,13 +26,17 @@ class ChromosomePage extends Component {
         this.props.actions.setGenomeData(event.value, this.props.activeChromosome);
     }
 
-    onSubGenomeChangeThreshold = () => {
-        let SG1Value = parseFloat(document.getElementById("sortingPercent").value.slice(0, -1));
-        let SG2Value = parseFloat(document.getElementById("sortingPercent2").value.slice(0, -1));
-        let SG3Value = parseFloat(document.getElementById("sortingPercent3").value.slice(0, -1));
-        let SubGenomeThreshold = { "SG1": SG1Value, "SG2": SG2Value, "SG3": SG3Value };
+    onSubGenomeChangeThreshold = (localSG1Value, localSG2Value, localSG3Value) => {
+        // console.log("Chromosome " + localSG1Value);
+        // console.log("Chromosome " + localSG2Value);
+        // console.log("Chromosome " + localSG3Value);
+        // debugger;
+        // let SG1Value = parseFloat(document.getElementById("sortingPercent").value.slice(0, -1));
+        // let SG2Value = parseFloat(document.getElementById("sortingPercent2").value.slice(0, -1));
+        // let SG3Value = parseFloat(document.getElementById("sortingPercent3").value.slice(0, -1));
+        // let SubGenomeThreshold = { "SG1": SG1Value, "SG2": SG2Value, "SG3": SG3Value };
 
-        this.props.actions.setGenomeDataThreshold(SubGenomeThreshold, this.props.activeChromosome);
+        // this.props.actions.setGenomeDataThreshold(SubGenomeThreshold, this.props.activeChromosome);
     }
 
     onChromosomeChange = (activeChromosome) => {
@@ -155,12 +159,16 @@ class ChromosomePage extends Component {
                 {loader ?
                     <Loader className='loading-spinner' type='spin' height='100px' width='100px' color='#d6e5ff' delay={- 1} /> :
                     <div className='dashboard-inner-root text-center'>
+                        <div className="instruction-panel"><p><b> Instructions: </b> The interactive graph below is a bar graph of Brassica Napus split by their chromosomes. You are able to sort the graph by changing the active subgenome using the drop down menu or by clicking the "Percentage Sort" button, using the sliders and then clicking the "Sort" button. Once you have selected a chromosome the graph below will update. This graph has a window that is both draggable and resizable. This window will change the contents of the Subregion graph below. Once you move to the Subregion graph, you can hover over the individual genes with your mouse to get their Gene Name as well as their composition. Hovering over a gene will cause the gene in the Reference Gene Map to highlight white. If you want to use a window to select multiple genes at one time, you can click the "Select Region" button and use the window as used in the previous visualization.</p></div>
                         <FilterPanel
                             activeSubGenome={activeSubGenome}
                             subGenomes={subGenomes}
                             onSubGenomeChange={this.onSubGenomeChange}
-                            onSubGenomeChangeThreshold={this.onSubGenomeChangeThreshold} />
+                            onSubGenomeChangeThreshold={this.onSubGenomeChangeThreshold}
+                            activeChromosome={activeChromosome}
+                            />
                         {chromosomeData.length > 0 ?
+                        
                             <div>
                                 {/* code chunk to show tooltip*/}
                                 {isTooltipVisible && <Tooltip {...tooltipData} />}

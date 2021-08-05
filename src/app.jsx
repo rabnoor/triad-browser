@@ -9,8 +9,6 @@ import { Provider } from 'react-redux';
 import { Router, Route, IndexRoute, hashHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import './utils/mouseInstantiate';
-
 
 //Root sass file for webpack to compile
 import './sass/main.scss';

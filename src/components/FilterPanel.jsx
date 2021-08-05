@@ -1,16 +1,42 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
 import ReactSelect from 'react-select';
-import NumericInput from 'react-numeric-input';
 import Switch from 'react-switch';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { Button } from 'reactstrap';
+import Slider, { SliderTooltip  } from 'rc-slider';
+import 'rc-tooltip/assets/bootstrap.css';
+import 'rc-slider/assets/index.css';
+import { setGenomeDataThreshold, sortGenomeViewData } from '../redux/actions/actions';
 
-export default class FilterPanel extends Component {
+
+const { Handle } = Slider;
+
+const handle = props => {
+    const { value, dragging, index, ...restProps } = props;
+    return (
+      <SliderTooltip
+        prefixCls="rc-slider-tooltip"
+        overlay={`${value} %`}
+        visible={dragging}
+        placement="top"
+        key={index}
+      >
+        <Handle value={value} {...restProps} />
+      </SliderTooltip>
+    );
+  };
+
+class FilterPanel extends Component {
 
     constructor(props) {
         super(props)
         this.state = {
             showDropDown: false,
+            localSG1Value: 0,
+            localSG2Value: 0,
+            localSG3Value: 0,
         }
     }
 
@@ -22,10 +48,27 @@ export default class FilterPanel extends Component {
         return num + "%";
     }
 
+    changeSG1 = (localSG1Value) => {
+        this.setState({localSG1Value})
+    }
+
+    changeSG2 = (localSG2Value) => {
+        this.setState({localSG2Value})
+    }
+
+    changeSG3 = (localSG3Value) => {
+        this.setState({localSG3Value})
+    }
+
+    onClickFunction = () => {
+        let SubGenomeThreshold = { "SG1": this.state.localSG1Value, "SG2": this.state.localSG2Value, "SG3": this.state.localSG3Value };
+        this.props.actions.setGenomeDataThreshold(SubGenomeThreshold, this.props.activeChromosome);
+    }
+
     render() {
 
-        const { subGenomes = [], onSubGenomeChange, onSubGenomeChangeThreshold, activeSubGenome = '' } = this.props;
-        const { showDropDown = false } = this.state;
+        const { subGenomes = [], onSubGenomeChange, onSubGenomeChangeThreshold, activeSubGenome = 'N/A',  } = this.props;
+        const { showDropDown = false,} = this.state;
 
         // Create the dropdown menu options from the existing subGenomes
         let options = _.map(subGenomes, (subGenome) => {
@@ -62,20 +105,21 @@ export default class FilterPanel extends Component {
                     </span>
                     {showDropDown ?
                         <div className="text-container ">
-                            <div className='inner-span-text'>
-                                <b className="percent-subgenome-text">SG1</b>
-                                <NumericInput id="sortingPercent" min={0} max={100} step={0.1} precision={2} value={0} format={this.formatText} />
-                            </div>
-                            <div className='inner-span-text'>
-                                <b className="percent-subgenome-text">SG2</b>
-
-                                <NumericInput id="sortingPercent2" min={0} max={100} step={0.1} precision={2} value={0} format={this.formatText} />
-                            </div>
-                            <div className='inner-span-text'>
-                                <b className="percent-subgenome-text">SG3</b>
-                                <NumericInput id="sortingPercent3" min={0} max={100} step={0.1} precision={2} value={0} format={this.formatText} />
-                            </div>
-                            <Button className="sort-button" variant="primary" size="sm" onClick={onSubGenomeChangeThreshold}>
+                            <span>
+                                <div className='inner-span-text'>
+                                    <b className="percent-subgenome-text">SG1</b>
+                                    <Slider id="sortingPercent" min={0} max={100} defaultValue={0} handle={handle} onChange={this.changeSG1}/>
+                                </div>
+                                <div className='inner-span-text'>
+                                    <b className="percent-subgenome-text">SG2</b>
+                                    <Slider id="sortingPercent" min={0} max={100} defaultValue={0} handle={handle} onChange={this.changeSG2}/>
+                                </div>
+                                <div className='inner-span-text'>
+                                    <b className="percent-subgenome-text">SG3</b>
+                                    <Slider id="sortingPercent" min={0} max={100} defaultValue={0} handle={handle} onChange={this.changeSG3}/>
+                                </div>
+                            </span>
+                            <Button className="sort-button" variant="primary" size="sm" onClick={this.onClickFunction}>
                                 Sort
                             </Button>
                         </div>
@@ -84,6 +128,7 @@ export default class FilterPanel extends Component {
                             <span className='inner-span'>Sort By Subgenome</span>
                             <ReactSelect
                                 value={defaultActiveSubGenome}
+                                defaultValue={defaultActiveSubGenome}
                                 className='select-box source'
                                 options={options}
                                 styles={{
@@ -101,3 +146,15 @@ export default class FilterPanel extends Component {
         );
     }
 }
+
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: bindActionCreators({
+            setGenomeDataThreshold,
+            sortGenomeViewData
+        }, dispatch)
+    };
+}
+
+export default connect(null, mapDispatchToProps)(FilterPanel);
+
