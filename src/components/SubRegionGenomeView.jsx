@@ -148,7 +148,7 @@ class SubRegionGenomeView extends Component {
                         style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
                     </div>
                 </div>
-                <canvas colorRendering="optimizeQuality" className="triad-stack-canvas" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
+                <canvas colorRendering="optimizeQuality" className="triad-stack-canvas snapshot" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
             </div>
         );
     }

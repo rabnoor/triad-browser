@@ -7,8 +7,8 @@ import _ from 'lodash';
 import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeMap, Tooltip, GeneRefMap } from '../components';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
-import { setGenomeData, setChromosomeData, setDefaultDataChromosome, setRegion, setGenomeDataThreshold, setActiveSubGenome} from '../redux/actions/actions';
-
+import { setGenomeData, setChromosomeData, setDefaultDataChromosome, setRegion, setGenomeDataThreshold, setActiveSubGenome } from '../redux/actions/actions';
+import { initializeSnapshot, updateSnapshot } from '@kiranbandi/snapshot';
 
 class ChromosomePage extends Component {
 
@@ -119,10 +119,22 @@ class ChromosomePage extends Component {
                 let start = centerPoint - genomeWindowRange;
                 let end = centerPoint + genomeWindowRange;
 
-                actions.setDefaultDataChromosome(chromosomeData, genomeData, geneData, {start, end});
+                actions.setDefaultDataChromosome(chromosomeData, genomeData, geneData, { start, end });
 
                 // Set the data onto the state
                 this.setState({ subGenomes, chromosomes });
+
+                initializeSnapshot(false, 1000,
+                    {
+                        'class': '.snapshot',
+                        'type': 'canvas',
+                        'size': { 'width': 200, 'height': 200 }
+                    },
+                    (data) => {
+                        this.props.actions.setGenomeData(data.activeSubGenome, data.activeChromosome);
+                        this.props.actions.setChromosomeData(data.activeChromosome, this.props.genomeData);
+                    });
+
             })
             .catch(() => {
                 alert("Sorry there was an error in fetching and parsing the file");
@@ -153,6 +165,10 @@ class ChromosomePage extends Component {
             .domain([0, innerTriadData.length - 1])
             .range([0, CHART_WIDTH]);
 
+
+        // Pump the data to the snapshot store
+        updateSnapshot({ activeChromosome, activeSubGenome });
+
         // set the dimensions of the graph
         return (
             <div className='dashboard-root container-fluid'>
@@ -166,9 +182,9 @@ class ChromosomePage extends Component {
                             onSubGenomeChange={this.onSubGenomeChange}
                             onSubGenomeChangeThreshold={this.onSubGenomeChangeThreshold}
                             activeChromosome={activeChromosome}
-                            />
+                        />
                         {chromosomeData.length > 0 ?
-                        
+
                             <div>
                                 {/* code chunk to show tooltip*/}
                                 {isTooltipVisible && <Tooltip {...tooltipData} />}
