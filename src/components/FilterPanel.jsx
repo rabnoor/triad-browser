@@ -8,7 +8,7 @@ import { Button } from 'reactstrap';
 import Slider, { SliderTooltip  } from 'rc-slider';
 import 'rc-tooltip/assets/bootstrap.css';
 import 'rc-slider/assets/index.css';
-import { setGenomeDataThreshold, sortGenomeViewData } from '../redux/actions/actions';
+import { setGenomeDataThreshold, sortGenomeViewData, sortGenomeViewDataThreshold } from '../redux/actions/actions';
 
 
 const { Handle } = Slider;
@@ -61,8 +61,15 @@ class FilterPanel extends Component {
     }
 
     onClickFunction = () => {
+        let element = document.getElementById("chromID-AT1");
         let SubGenomeThreshold = { "SG1": this.state.localSG1Value, "SG2": this.state.localSG2Value, "SG3": this.state.localSG3Value };
-        this.props.actions.setGenomeDataThreshold(SubGenomeThreshold, this.props.activeChromosome);
+
+        if (document.body.contains(element)) {
+            this.props.actions.setGenomeDataThreshold(SubGenomeThreshold, this.props.activeChromosome);
+        } else {
+            this.props.actions.sortGenomeViewDataThreshold(SubGenomeThreshold, this.props.activeChromosome);
+        }
+
     }
 
     render() {
@@ -151,7 +158,8 @@ function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators({
             setGenomeDataThreshold,
-            sortGenomeViewData
+            sortGenomeViewData,
+            sortGenomeViewDataThreshold
         }, dispatch)
     };
 }

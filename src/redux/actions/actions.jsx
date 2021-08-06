@@ -128,6 +128,52 @@ export function sortGenomeViewData(activeSubGenome) {
     };
 }
 
+export function sortGenomeViewDataThreshold(activeSubGenome, activeChromosome) {
+    let { genomeData } = _.cloneDeep(window.triadBrowserStore);
+
+    let genomeViewData = _.reduce(_.keys(genomeData).sort(), (acc, value) => [...acc, ...genomeData[value]], []);
+    
+    if (activeSubGenome.SG1 > 0 && activeSubGenome.SG2 > 0 && activeSubGenome.SG3 > 0) {
+        genomeViewData = _.sortBy(genomeViewData, (d) => 
+            d.SG1 >= activeSubGenome.SG1 && d.SG2 >= activeSubGenome.SG2 && d.SG3 >= activeSubGenome.SG3
+        );
+    }
+    else if (activeSubGenome.SG1 > 0 && activeSubGenome.SG2 > 0) {
+        genomeViewData = _.sortBy(genomeViewData, (d) => 
+            d.SG1 >= activeSubGenome.SG1 && d.SG2 >= activeSubGenome.SG2
+        );
+    }
+    else if (activeSubGenome.SG1 > 0 && activeSubGenome.SG3 > 0) {
+        genomeViewData = _.sortBy(genomeViewData, (d) => 
+            d.SG1 >= activeSubGenome.SG1 && d.SG3 >= activeSubGenome.SG3
+        );
+    }
+    else if (activeSubGenome.SG2 > 0 && activeSubGenome.SG3 > 0) {
+        genomeViewData = _.sortBy(genomeViewData, (d) => 
+            d.SG2 >= activeSubGenome.SG2 && d.SG3 >= activeSubGenome.SG3
+        );
+    } else if (activeSubGenome.SG1 > 0 && activeSubGenome.SG2 == 0 && activeSubGenome.SG3 == 0) {
+        genomeViewData = _.sortBy(genomeViewData, (d) => 
+            d.SG1 >= activeSubGenome.SG1
+        );
+    }
+    else if (activeSubGenome.SG1 == 0 && activeSubGenome.SG2 > 0 && activeSubGenome.SG3 == 0) {
+        genomeViewData = _.sortBy(genomeViewData, (d) => 
+            d.SG2 >= activeSubGenome.SG2
+        );
+    }
+    else if (activeSubGenome.SG1 == 0 && activeSubGenome.SG2 == 0 && activeSubGenome.SG3 > 0) {
+        genomeViewData = _.sortBy(genomeViewData, (d) => 
+            d.SG3 >= activeSubGenome.SG3
+        );
+    }
+
+    return dispatch => {
+        dispatch({ type: types.SET_ACTIVE_SUBGENOME, activeSubGenome });
+        dispatch({ type: types.SET_GENOME_VIEW_DATA, genomeViewData });
+    };
+}
+
 export function setDefaultDataWholeGenome(chromosomeData, genomeData, geneData, genomeViewData) {
     return dispatch => {
         dispatch({ type: types.SET_CHROMOSOME_DATA, chromosomeData });
