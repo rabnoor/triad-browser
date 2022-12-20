@@ -64,22 +64,7 @@ class SubRegionMap extends Component {
             .domain([0, subRegionData.length - 1])
             .range([0, CHART_WIDTH]);
 
-        // // want window to be 50px, take 25 on either side
-        // let genomeWindowRange = chartScale.invert(75);
-
-        // let centerPoint = subRegionData.length;
-
         var target = document.getElementById('gene-finder-window');
-
-        // let start = centerPoint - genomeWindowRange;
-        // let end = centerPoint + genomeWindowRange;
-        // let width = end - start;
-
-        // target.setAttribute('data-x', start);
-
-        // target.style.webkitTransform = target.style.transform = 'translate(' + start + 'px,' + '0px)';
-
-        // target.style.width = width + 'px';
 
         if (enableSelectionRegion) {
             this.setRegion(getStartAndEnd(target, chartScale));

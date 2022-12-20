@@ -14,10 +14,7 @@ export default class TriadLegend extends Component {
         const { subGenomes = [] } = this.props;
 
         let context = clearAndGetContext(this.canvas);
-
         let padding_from_left = 15;
-        // context.fillStyle = "white";
-        // context.fillText("LEGEND", subGenomes.length * 50 / subGenomes.length, 35);
         const y_coord = 15;
         _.map(subGenomes, (subGenome, index) => {
             context.beginPath();

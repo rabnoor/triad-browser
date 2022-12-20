@@ -8,7 +8,6 @@ import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
 import { setGenomeData, setChromosomeData, setDefaultDataWholeGenome, setGenomeViewData, sortGenomeViewData, setActiveSubGenome } from '../redux/actions/actions';
 import { SubRegionMap, FilterPanel, TriadGenomeViewMap, Tooltip, GeneRefMap, SubRegionGenomeView } from '../components';
-import { initializeSnapshot, updateSnapshot } from '@kiranbandi/snapshot';
 
 class GenomePage extends Component {
 
@@ -101,17 +100,6 @@ class GenomePage extends Component {
                 // Set the data onto the state
                 this.setState({ subGenomes, chromosomes });
 
-                initializeSnapshot(false, 1000,
-                    {
-                        'class': '.snapshot',
-                        'type': 'canvas',
-                        'size': { 'width': 200, 'height': 200 }
-                    },
-                    (data) => {
-                        this.props.actions.sortGenomeViewData(data.activeSubGenome);
-                    });
-
-
             })
             .catch(() => {
                 alert("Sorry there was an error in fetching and parsing the file");
@@ -154,9 +142,6 @@ class GenomePage extends Component {
         const innerChartScale = scaleLinear()
             .domain([0, innerTriadData.length - 1])
             .range([0, CHART_WIDTH]);
-
-        // Pump the data to the snapshot store
-        updateSnapshot({ activeChromosome, activeSubGenome });
 
         // set the dimensions of the graph
         return (

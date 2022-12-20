@@ -8,7 +8,6 @@ import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeMap, Tooltip, Gene
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
 import { setGenomeData, setChromosomeData, setDefaultDataChromosome, setRegion, setGenomeDataThreshold, setActiveSubGenome } from '../redux/actions/actions';
-import { initializeSnapshot, updateSnapshot } from '@kiranbandi/snapshot';
 
 class ChromosomePage extends Component {
 
@@ -124,17 +123,6 @@ class ChromosomePage extends Component {
                 // Set the data onto the state
                 this.setState({ subGenomes, chromosomes });
 
-                initializeSnapshot(false, 1000,
-                    {
-                        'class': '.snapshot',
-                        'type': 'canvas',
-                        'size': { 'width': 200, 'height': 200 }
-                    },
-                    (data) => {
-                        this.props.actions.setGenomeData(data.activeSubGenome, data.activeChromosome);
-                        this.props.actions.setChromosomeData(data.activeChromosome, this.props.genomeData);
-                    });
-
             })
             .catch(() => {
                 alert("Sorry there was an error in fetching and parsing the file");
@@ -165,9 +153,6 @@ class ChromosomePage extends Component {
             .domain([0, innerTriadData.length - 1])
             .range([0, CHART_WIDTH]);
 
-
-        // Pump the data to the snapshot store
-        updateSnapshot({ activeChromosome, activeSubGenome });
 
         // set the dimensions of the graph
         return (
