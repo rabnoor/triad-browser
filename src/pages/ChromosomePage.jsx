@@ -8,9 +8,7 @@ import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeMap, Tooltip, Gene
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
 import { setGenomeData, setChromosomeData, setDefaultDataChromosome, setRegion, setGenomeDataThreshold, setActiveSubGenome } from '../redux/actions/actions';
-
 class ChromosomePage extends Component {
-
     constructor(props) {
         super(props)
         this.state = {
@@ -23,19 +21,6 @@ class ChromosomePage extends Component {
 
     onSubGenomeChange = (event) => {
         this.props.actions.setGenomeData(event.value, this.props.activeChromosome);
-    }
-
-    onSubGenomeChangeThreshold = (localSG1Value, localSG2Value, localSG3Value) => {
-        // console.log("Chromosome " + localSG1Value);
-        // console.log("Chromosome " + localSG2Value);
-        // console.log("Chromosome " + localSG3Value);
-        // debugger;
-        // let SG1Value = parseFloat(document.getElementById("sortingPercent").value.slice(0, -1));
-        // let SG2Value = parseFloat(document.getElementById("sortingPercent2").value.slice(0, -1));
-        // let SG3Value = parseFloat(document.getElementById("sortingPercent3").value.slice(0, -1));
-        // let SubGenomeThreshold = { "SG1": SG1Value, "SG2": SG2Value, "SG3": SG3Value };
-
-        // this.props.actions.setGenomeDataThreshold(SubGenomeThreshold, this.props.activeChromosome);
     }
 
     onChromosomeChange = (activeChromosome) => {
@@ -65,7 +50,7 @@ class ChromosomePage extends Component {
                     };
                     // group the array by Chromosome
                 }), (e) => e.Chromosome);
-                return getFile('data/AT.txt');
+                return getFile('data/bn_a_pollen.txt');
             })
             .then((rawData) => {
                 // processing the data
@@ -165,7 +150,6 @@ class ChromosomePage extends Component {
                             activeSubGenome={activeSubGenome}
                             subGenomes={subGenomes}
                             onSubGenomeChange={this.onSubGenomeChange}
-                            onSubGenomeChangeThreshold={this.onSubGenomeChangeThreshold}
                             activeChromosome={activeChromosome}
                         />
                         {chromosomeData.length > 0 ?
