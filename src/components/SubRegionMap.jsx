@@ -41,9 +41,10 @@ class SubRegionMap extends Component {
 
         const xPosition = event.pageX - canvasRect.left;
 
-        const referenceIndex = Math.floor(chartScale.invert(xPosition)),
-            dataPoint = subRegionData[referenceIndex];
 
+        const referenceIndex = Math.round(chartScale.invert(xPosition)),
+            dataPoint = subRegionData[referenceIndex];
+            
         actions.showTooltip(true, {
             'x': event.pageX + 200 > pageWidth ? event.pageX - 200 : event.pageX + 25,
             'y': event.pageY - 50,

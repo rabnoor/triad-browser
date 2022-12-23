@@ -27,14 +27,38 @@ class GenomePage extends Component {
 
     componentDidMount() {
 
-        let { activeSubGenome, activeChromosome, actions} = this.props;
+        let { activeSubGenome, activeChromosome, actions } = this.props;
+
+
+        // get the source name based on window query params
+        let { sourceID = "" } = this.props.params;
+
+        // If no source ID is set, check if there is a default set in the window object
+        // this default is set when the webapp is launched with a sourceID set in the URL
+        if (sourceID.length == 0) {
+            // If there is no default set in the window object then default to AT camelina
+            if (window.defaultSourceID && window.defaultSourceID.length > 0) {
+                sourceID = window.defaultSourceID;
+            }
+            else {
+                sourceID = "AT_camelina";
+            }
+        }
+        else {
+            // store the sourceID that the webapp was launched with so it can be used when the tab is switched
+            window.defaultSourceID = sourceID;
+        }
+        // The first part tells you the reference gene file name and the second part tells you the gene expression file name
+        let geneSource = sourceID.split("_")[0] + "_genes.gff",
+            expressionFileSource = sourceID.split("_")[1] + ".txt";
+
 
         let geneData = [];
 
         // Turn loader on
         this.setState({ 'loader': true });
 
-        getFile('data/AT_genes.gff')
+        getFile('data/' + geneSource)
             .then((geneFile) => {
 
                 let lineData = geneFile.split('\n').slice(1).map((d) => d.split('\t'));
@@ -49,7 +73,7 @@ class GenomePage extends Component {
                     };
                     // group the array by Chromosome
                 }), (e) => e.Chromosome);
-                return getFile('data/AT.txt');
+                return getFile('data/' + expressionFileSource);
             })
             .then((rawData) => {
                 // processing the data
@@ -71,7 +95,7 @@ class GenomePage extends Component {
                 activeSubGenome = "N/A";
                 actions.setActiveSubGenome(activeSubGenome);
 
-                
+
                 // Group the data by the chromosome, make a deep clone of the data so we can go back to the "unsorted" data later.
                 let genomeData = _.groupBy(records, (d) => d.activeChromosome);
                 let originalGenomeData = _.cloneDeep(genomeData);
@@ -105,15 +129,15 @@ class GenomePage extends Component {
                 alert("Sorry there was an error in fetching and parsing the file");
                 console.log('error');
             })
-            .finally(() => { 
-                this.setState({ 'loader': false }) 
+            .finally(() => {
+                this.setState({ 'loader': false })
             });
 
     }
 
     render() {
 
-        const { chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region, genomeRegion, genomeViewData} = this.props;
+        const { chromosomeData, isTooltipVisible, tooltipData, activeSubGenome, activeChromosome, region, genomeRegion, genomeViewData } = this.props;
 
         const { loader = false, chromosomes = [], subGenomes = [], hideChromosome = true } = this.state;
 
@@ -155,8 +179,8 @@ class GenomePage extends Component {
                             subGenomes={subGenomes}
                             onSubGenomeChange={this.onSubGenomeChange}
                             activeChromosome={activeChromosome}
-                             />
-                            
+                        />
+
                         {genomeViewData.length > 0 ?
                             <div>
                                 {/* code chunk to show tooltip*/}

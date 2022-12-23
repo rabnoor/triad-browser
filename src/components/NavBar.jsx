@@ -9,7 +9,7 @@ export default class NavBar extends Component {
     }
 
     render() {
-        const { handleSubmit, isConnected = false, Disconnect} = this.props;
+        const { handleSubmit, isConnected = false, Disconnect } = this.props;
 
         return (
             <nav className="navbar navbar-inverse navbar-fixed-top">
@@ -26,6 +26,11 @@ export default class NavBar extends Component {
                         <ul className='nav navbar-nav'>
                             <li>
                                 <Link to={'/'}>
+                                    Home
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to={'/chromosome-view'}>
                                     Chromosome analysis
                                 </Link>
                             </li>

@@ -7,6 +7,7 @@ import _ from 'lodash';
 import { ChromosomeMap, SubRegionMap, FilterPanel, TriadGenomeMap, Tooltip, GeneRefMap } from '../components';
 import { scaleLinear } from 'd3';
 import { CHART_WIDTH } from '../utils/chartConstants';
+import { hashHistory } from 'react-router';
 import { setGenomeData, setChromosomeData, setDefaultDataChromosome, setRegion, setGenomeDataThreshold, setActiveSubGenome } from '../redux/actions/actions';
 class ChromosomePage extends Component {
     constructor(props) {
@@ -31,11 +32,34 @@ class ChromosomePage extends Component {
 
         let { activeSubGenome, activeChromosome, actions } = this.props;
 
+        // get the source name based on window query params
+        let { sourceID = "" } = this.props.params;
+
+        // If no source ID is set, check if there is a default set in the window object
+        // this default is set when the webapp is launched with a sourceID set in the URL
+        if (sourceID.length == 0) {
+            // If there is no default set in the window object then default to AT camelina
+            if (window.defaultSourceID && window.defaultSourceID.length > 0) {
+                sourceID = window.defaultSourceID;
+            }
+            else {
+                sourceID = "AT_camelina";
+            }
+        }
+        else {
+            // store the sourceID that the webapp was launched with so it can be used when the tab is switched
+            window.defaultSourceID = sourceID;
+        }
+        // The first part tells you the reference gene file name and the second part tells you the gene expression file name
+        let geneSource = sourceID.split("_")[0] + "_genes.gff",
+            expressionFileSource = sourceID.split("_")[1] + ".txt";
+
+
         let geneData = [];
         // Turn loader onON
         this.setState({ 'loader': true });
 
-        getFile('data/AT_genes.gff')
+        getFile('data/' + geneSource)
             .then((geneFile) => {
 
                 let lineData = geneFile.split('\n').slice(1).map((d) => d.split('\t'));
@@ -50,7 +74,7 @@ class ChromosomePage extends Component {
                     };
                     // group the array by Chromosome
                 }), (e) => e.Chromosome);
-                return getFile('data/bn_a_pollen.txt');
+                return getFile('data/' + expressionFileSource);
             })
             .then((rawData) => {
                 // processing the data

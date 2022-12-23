@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import { Container } from './components';
 import ChromosomePage from './pages/ChromosomePage';
 import GenomePage from './pages/GenomePage';
+import Home from './pages/Home';
 import configureStore from './redux/store/configureStore';
 import { Provider } from 'react-redux';
 import { Router, Route, IndexRoute, hashHistory } from 'react-router';
@@ -24,8 +25,9 @@ class App extends Component {
       <Provider store={store}>
         <Router history={hashHistory}>
           <Route path='/' component={Container}>
-            <IndexRoute component={ChromosomePage} />
-            <Route path='genome-view' component={GenomePage} />
+            <IndexRoute component={Home} />
+            <Route path='genome-view(/:sourceID)' component={GenomePage} />
+            <Route path='chromosome-view(/:sourceID)' component={ChromosomePage} />
           </Route>
         </Router>
       </Provider>

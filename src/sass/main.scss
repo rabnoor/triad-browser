@@ -11,6 +11,25 @@
 @import "components/container";
 @import "components/generefmap";
 
+.home-header {
+    padding-top: 75px;
+    padding-bottom: 75px;
+    margin-bottom: 5px;
+    font-size: 1.25em;
+    color: #fff;
+    position: relative;
+    h1 {
+        margin-bottom: 5px;
+        font-size: 40px;
+        line-height: 1;
+        font-weight: bold;
+    }
+    p {
+        font-weight: 300;
+        line-height: 1.4;
+    }
+}
+
 .graph-tooltip {
     position: absolute;
     width: 200px;
