@@ -17,6 +17,9 @@ class Home extends Component {
                         <li> <Link to={'/chromosome-view/AT_bn-c-stigma'}> B.napus Stigma C genome </Link> B.napus Stigma C genome (referenced against Arabidopsis)</li>
                         <li> <Link to={'/chromosome-view/AT_bn-a-pollen'}> B.napus Pollen A genome </Link> B.napus Pollen A genome (referenced against Arabidopsis)</li>
                         <li> <Link to={'/chromosome-view/AT_bn-c-pollen'}> B.napus Pollen C genome </Link> B.napus Pollen C genome (referenced against Arabidopsis)</li>
+                        <li> <Link to={'/chromosome-view/AT_bn-all-pollen'}> B.napus Pollen All  </Link> B.napus Pollen All (referenced against Arabidopsis)</li>
+                        <li> <Link to={'/chromosome-view/AT_bn-all-stigma'}> B.napus Stigma All  </Link> B.napus Stigma All (referenced against Arabidopsis)</li>
+                    
                     </ul>
                 </div>
             </div>
@@ -26,3 +29,4 @@ class Home extends Component {
 };
 
 export default Home;
+

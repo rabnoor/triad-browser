@@ -14,6 +14,8 @@ export function showTooltip(isTooltipVisible, tooltipData) {
     };
 }
 
+
+
 export function setChromosomeData(activeChromosome, genomeData) {
     const chromosomeData = genomeData[activeChromosome];
     return dispatch => {
@@ -42,63 +44,25 @@ export function setGenomeData(activeSubGenome, activeChromosome) {
 
 export function setGenomeDataThreshold(activeSubGenome, activeChromosome) {
     let { chromosomeData, genomeData } = _.cloneDeep(window.triadBrowserStore);
-    console.log(activeSubGenome.SG1);
-    if (activeSubGenome.SG1 > 0 && activeSubGenome.SG2 > 0 && activeSubGenome.SG3 > 0) {
-        _.map(_.keys(genomeData), (chromosome) => {
-            genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) =>
-                d.SG1 >= activeSubGenome.SG1 && d.SG2 >= activeSubGenome.SG2 && d.SG3 >= activeSubGenome.SG3
-            );
-        });
-        chromosomeData = genomeData[activeChromosome];
-    }
-    else if (activeSubGenome.SG1 > 0 && activeSubGenome.SG2 > 0) {
-        _.map(_.keys(genomeData), (chromosome) => {
-            genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) =>
-                d.SG1 >= activeSubGenome.SG1 && d.SG2 >= activeSubGenome.SG2
-            );
-        });
-        chromosomeData = genomeData[activeChromosome];
-    }
-    else if (activeSubGenome.SG1 > 0 && activeSubGenome.SG3 > 0) {
-        _.map(_.keys(genomeData), (chromosome) => {
-            genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) =>
-                d.SG1 >= activeSubGenome.SG1 && d.SG3 >= activeSubGenome.SG3
-            );
-        });
-        chromosomeData = genomeData[activeChromosome];
-    }
-    else if (activeSubGenome.SG2 > 0 && activeSubGenome.SG3 > 0) {
-        _.map(_.keys(genomeData), (chromosome) => {
-            genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) =>
-                d.SG2 >= activeSubGenome.SG2 && d.SG3 >= activeSubGenome.SG3
-            );
-        });
-        chromosomeData = genomeData[activeChromosome];
-    } else if (activeSubGenome.SG1 > 0 && activeSubGenome.SG2 == 0 && activeSubGenome.SG3 == 0) {
-        _.map(_.keys(genomeData), (chromosome) => {
-            genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) =>
-                d.SG1 >= activeSubGenome.SG1
-            );
-        });
-        chromosomeData = genomeData[activeChromosome];
-    }
-    else if (activeSubGenome.SG1 == 0 && activeSubGenome.SG2 > 0 && activeSubGenome.SG3 == 0) {
-        _.map(_.keys(genomeData), (chromosome) => {
-            genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) =>
-                d.SG2 >= activeSubGenome.SG2
-            );
-        });
-        chromosomeData = genomeData[activeChromosome];
-    }
-    else if (activeSubGenome.SG1 == 0 && activeSubGenome.SG2 == 0 && activeSubGenome.SG3 > 0) {
-        _.map(_.keys(genomeData), (chromosome) => {
-            genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) =>
-                d.SG3 >= activeSubGenome.SG3
-            );
-        });
-        chromosomeData = genomeData[activeChromosome];
-    }
 
+    function checkThreshold(activeSubGenome, d){
+
+        {for (var subG in d){
+            if (d[subG] < activeSubGenome[subG]){
+                return false;
+            }
+        }
+        return true;
+    }
+}
+   
+    _.map(_.keys(genomeData), (chromosome) => {
+        genomeData[chromosome] = _.sortBy(genomeData[chromosome], (d) =>
+            checkThreshold(activeSubGenome, d)
+        );
+    });
+
+    chromosomeData = genomeData[activeChromosome];
     return dispatch => {
         dispatch({ type: types.SET_CHROMOSOME_DATA, chromosomeData });
         dispatch({ type: types.SET_GENOME_DATA, genomeData });
@@ -112,14 +76,9 @@ export function sortGenomeViewData(activeSubGenome) {
     let genomeViewData = _.reduce(_.keys(genomeData).sort(), (acc, value) => [...acc, ...genomeData[value]], []);
 
     if (activeSubGenome != "N/A" && !activeSubGenome.includes('%')) {
-        if (activeSubGenome == "SG1") {
-            genomeViewData = _.sortBy(genomeViewData, (d) => d.SG1);
-        }
-        else if (activeSubGenome == "SG2") {
-            genomeViewData = _.sortBy(genomeViewData, (d) => d.SG2);
-        } else {
-            genomeViewData = _.sortBy(genomeViewData, (d) => d.SG3);
-        }
+       
+        genomeViewData = _.sortBy(genomeViewData, (d) => d[activeSubGenome]);
+
     }
 
     return dispatch => {
@@ -132,42 +91,20 @@ export function sortGenomeViewDataThreshold(activeSubGenome, activeChromosome) {
     let { genomeData } = _.cloneDeep(window.triadBrowserStore);
 
     let genomeViewData = _.reduce(_.keys(genomeData).sort(), (acc, value) => [...acc, ...genomeData[value]], []);
-    
-    if (activeSubGenome.SG1 > 0 && activeSubGenome.SG2 > 0 && activeSubGenome.SG3 > 0) {
-        genomeViewData = _.sortBy(genomeViewData, (d) => 
-            d.SG1 >= activeSubGenome.SG1 && d.SG2 >= activeSubGenome.SG2 && d.SG3 >= activeSubGenome.SG3
-        );
-    }
-    else if (activeSubGenome.SG1 > 0 && activeSubGenome.SG2 > 0) {
-        genomeViewData = _.sortBy(genomeViewData, (d) => 
-            d.SG1 >= activeSubGenome.SG1 && d.SG2 >= activeSubGenome.SG2
-        );
-    }
-    else if (activeSubGenome.SG1 > 0 && activeSubGenome.SG3 > 0) {
-        genomeViewData = _.sortBy(genomeViewData, (d) => 
-            d.SG1 >= activeSubGenome.SG1 && d.SG3 >= activeSubGenome.SG3
-        );
-    }
-    else if (activeSubGenome.SG2 > 0 && activeSubGenome.SG3 > 0) {
-        genomeViewData = _.sortBy(genomeViewData, (d) => 
-            d.SG2 >= activeSubGenome.SG2 && d.SG3 >= activeSubGenome.SG3
-        );
-    } else if (activeSubGenome.SG1 > 0 && activeSubGenome.SG2 == 0 && activeSubGenome.SG3 == 0) {
-        genomeViewData = _.sortBy(genomeViewData, (d) => 
-            d.SG1 >= activeSubGenome.SG1
-        );
-    }
-    else if (activeSubGenome.SG1 == 0 && activeSubGenome.SG2 > 0 && activeSubGenome.SG3 == 0) {
-        genomeViewData = _.sortBy(genomeViewData, (d) => 
-            d.SG2 >= activeSubGenome.SG2
-        );
-    }
-    else if (activeSubGenome.SG1 == 0 && activeSubGenome.SG2 == 0 && activeSubGenome.SG3 > 0) {
-        genomeViewData = _.sortBy(genomeViewData, (d) => 
-            d.SG3 >= activeSubGenome.SG3
-        );
-    }
 
+
+    function sortingLogic(activeSubGenome, d){
+        for (var subG in d){
+            if (d[subG] < activeSubGenome[subG] && activeSubGenome[subG] != 0){
+                return false;
+            }
+        }
+        return true;
+    
+    }
+    genomeViewData = _.sortBy(genomeViewData, (d) => 
+            sortingLogic(activeSubGenome, d)
+        );
     return dispatch => {
         dispatch({ type: types.SET_ACTIVE_SUBGENOME, activeSubGenome });
         dispatch({ type: types.SET_GENOME_VIEW_DATA, genomeViewData });

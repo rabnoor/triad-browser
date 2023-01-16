@@ -44,15 +44,24 @@ class SubRegionMap extends Component {
 
         const referenceIndex = Math.round(chartScale.invert(xPosition)),
             dataPoint = subRegionData[referenceIndex];
-            
-        actions.showTooltip(true, {
+
+
+        let tooltipData = {
             'x': event.pageX + 200 > pageWidth ? event.pageX - 200 : event.pageX + 25,
             'y': event.pageY - 50,
             'gene': dataPoint.Gene,
-            'SG1': Math.round(dataPoint['SG1']) + '%',
-            'SG2': Math.round(dataPoint['SG2']) + '%',
-            'SG3': Math.round(dataPoint['SG3']) + '%'
-        });
+            'data' : []
+        }
+
+        for(var propt in dataPoint){
+            if (typeof(dataPoint[propt]) == 'number'){
+                tooltipData[propt] = dataPoint[propt]
+                if (dataPoint[propt]!=0){
+                tooltipData['data'].push(<p key={propt+"tooltipinfo"}><b>{propt}: </b><span>{dataPoint[propt]}</span></p>)
+            }}
+        }
+        // console.log(tooltipData)
+        actions.showTooltip(true, tooltipData);
 
     }
 

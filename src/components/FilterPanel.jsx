@@ -34,11 +34,12 @@ class FilterPanel extends Component {
         super(props)
         this.state = {
             showDropDown: false,
-            localSG1Value: 0,
-            localSG2Value: 0,
-            localSG3Value: 0,
+            localSGValues: {},
         }
+        this.setState = this.setState.bind(this); 
     }
+
+
 
     onToggleSelection = (showDropDown) => {
         this.setState({ showDropDown });
@@ -48,21 +49,29 @@ class FilterPanel extends Component {
         return num + "%";
     }
 
-    changeSG1 = (localSG1Value) => {
-        this.setState({localSG1Value})
+   
+
+    changeSG(className, value){
+
+        let SG= className;
+
+        this.setState(prevState => ({
+        localSGValues:{
+            ...prevState.localSGValues,
+            [SG]: value
+        }
+        }));
+
     }
 
-    changeSG2 = (localSG2Value) => {
-        this.setState({localSG2Value})
-    }
+   
+    onClickFunction=()=>{
 
-    changeSG3 = (localSG3Value) => {
-        this.setState({localSG3Value})
-    }
 
-    onClickFunction = () => {
+        
         let element = document.getElementById("chromID-AT1");
-        let SubGenomeThreshold = { "SG1": this.state.localSG1Value, "SG2": this.state.localSG2Value, "SG3": this.state.localSG3Value };
+        let SubGenomeThreshold = this.state.localSGValues;
+        console.log(SubGenomeThreshold)
 
         if (document.body.contains(element)) {
             this.props.actions.setGenomeDataThreshold(SubGenomeThreshold, this.props.activeChromosome);
@@ -73,8 +82,26 @@ class FilterPanel extends Component {
     }
 
     render() {
+        
+        const { subGenomes = [], onSubGenomeChange, onSubGenomeChangeThreshold, activeSubGenome = "N/A"} = this.props;
 
-        const { subGenomes = [], onSubGenomeChange, onSubGenomeChangeThreshold, activeSubGenome = 'N/A',  } = this.props;
+        let SGValues = {};
+        for (let i of subGenomes){
+            SGValues[i] = 0
+        }
+
+
+        let elements = [];
+        for (let i = 0; i < subGenomes.length; i++) {
+            elements.push(<div key={i} className='inner-span-text' id={"SEEE"+i}>
+            <b className="percent-subgenome-text" >{subGenomes[i]}</b>
+            <Slider className={subGenomes[i]} key={i} id={subGenomes[i]+"sortingPercent"}  min={0} max={100} defaultValue={0} handle={handle} 
+            onChange={(value) => {
+                this.changeSG(subGenomes[i], value);
+              }}/>
+            </div>)
+            }
+
         const { showDropDown = false,} = this.state;
 
         // Create the dropdown menu options from the existing subGenomes
@@ -113,18 +140,7 @@ class FilterPanel extends Component {
                     {showDropDown ?
                         <div className="text-container ">
                             <span>
-                                <div className='inner-span-text'>
-                                    <b className="percent-subgenome-text">SG1</b>
-                                    <Slider id="sortingPercent" min={0} max={100} defaultValue={0} handle={handle} onChange={this.changeSG1}/>
-                                </div>
-                                <div className='inner-span-text'>
-                                    <b className="percent-subgenome-text">SG2</b>
-                                    <Slider id="sortingPercent" min={0} max={100} defaultValue={0} handle={handle} onChange={this.changeSG2}/>
-                                </div>
-                                <div className='inner-span-text'>
-                                    <b className="percent-subgenome-text">SG3</b>
-                                    <Slider id="sortingPercent" min={0} max={100} defaultValue={0} handle={handle} onChange={this.changeSG3}/>
-                                </div>
+                            {elements}
                             </span>
                             <Button className="sort-button" variant="primary" size="sm" onClick={this.onClickFunction}>
                                 Sort
