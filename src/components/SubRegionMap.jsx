@@ -11,13 +11,14 @@ import Switch from 'react-switch';
 import TriadLegend from './TriadLegend';
 
 
-
 class SubRegionMap extends Component {
 
     constructor(props) {
         super(props)
         this.state = {
+            chartHeight: CHART_HEIGHT,
             enableSelectionRegion: false,
+            geneSelected: false,
             region: {
                 start: 850,
                 end: 1000,
@@ -52,17 +53,18 @@ class SubRegionMap extends Component {
             'gene': dataPoint.Gene,
             'data' : []
         }
-
+        let Prptindex = 0;
         for(var propt in dataPoint){
             if (typeof(dataPoint[propt]) == 'number'){
                 tooltipData[propt] = dataPoint[propt]
-                if (dataPoint[propt]!=0){
-                tooltipData['data'].push(<p key={propt+"tooltipinfo"}><b>{propt}: </b><span>{dataPoint[propt]}</span></p>)
-            }}
+                let tooltipColor = schemeTableau10[Prptindex-1];
+                tooltipData['data'].push(<p key={propt+"tooltipinfo"}><b><span style={{color: tooltipColor}}>{propt}</span>: </b><span>{Math.round(dataPoint[propt])+"%"}</span></p>)}
+                Prptindex++ ;
         }
         // console.log(tooltipData)
+        if (!this.state.geneSelected){
         actions.showTooltip(true, tooltipData);
-
+}
     }
 
     onToggleRegionWindow = (enableSelectionRegion) => {
@@ -85,8 +87,15 @@ class SubRegionMap extends Component {
 
         this.setState({ enableSelectionRegion });
     };
+    onMouseClick= (event) => { this.state.geneSelected = !this.state.geneSelected ;
 
-    onMouseLeave = (event) => { this.props.actions.showTooltip(false) }
+    }
+    onMouseLeave = (event) => { 
+        if (!this.state.geneSelected){
+            console.log(this.state.geneSelected)
+        this.props.actions.showTooltip(false) }
+
+}    
 
     drawChart = () => {
 
@@ -105,7 +114,7 @@ class SubRegionMap extends Component {
 
         let yMax = _.max(_.map(chartData, (d) => _.max(d)));
 
-        let scaleFactor = CHART_HEIGHT / yMax;
+        let scaleFactor = this.state.chartHeight / yMax;
 
         context.lineWidth = CHART_WIDTH / subRegionData.length;
 
@@ -116,8 +125,8 @@ class SubRegionMap extends Component {
             _.map(dataPoint, (d, stackIndex) => {
                 context.beginPath();
                 context.strokeStyle = schemeTableau10[stackIndex];
-                context.moveTo(padding_from_left, CHART_HEIGHT - (stackIndex == 0 ? 0 : dataPoint[stackIndex - 1] * scaleFactor));
-                context.lineTo(padding_from_left, CHART_HEIGHT - (dataPoint[stackIndex] * scaleFactor));
+                context.moveTo(padding_from_left, this.state.chartHeight - (stackIndex == 0 ? 0 : dataPoint[stackIndex - 1] * scaleFactor));
+                context.lineTo(padding_from_left, this.state.chartHeight - (dataPoint[stackIndex] * scaleFactor));
                 context.stroke();
             })
         });
@@ -186,6 +195,48 @@ class SubRegionMap extends Component {
                 ],
                 inertia: true
             })
+
+            interact(this.canvas).resizable({
+                // resize from all edges and corners
+                edges: { left: false, right: false, bottom: true, top: false },
+                listeners: {
+                    'move': (event) => {
+                        // Generic code that handles width and position of the window and sets it back onto the dom element
+
+                        console.log(event.deltaRect)
+                        // this.state.chartHeight -= event.delta.y;
+                        // this.drawChart()
+                        var target = event.target;
+
+                        // update the element's style
+                        let chartHeight = this.state.chartHeight + event.deltaRect.bottom;
+                        this.setState({chartHeight})
+
+                        // translate when resizing from left edges
+                        // x += event.deltaRect.top;
+                        // target.style.webkitTransform = target.style.transform =
+                        //     'translate(0px, ' + x + 'px)'
+
+                    },
+                    'end': (event) => {
+                        // this.setRegion(getStartAndEnd(event.target, chartScale));
+                        console.log(this.state.chartHeight);
+
+
+                    }
+                },
+                modifiers: [
+                    // keep the edges inside the parent
+                    // interact.modifiers.restrictEdges({
+                    //     outer: 'parent'
+                    // }),
+                    // minimum size
+                    interact.modifiers.restrictSize({
+                        min: { height: 100 }
+                    })
+                ],
+                inertia: true
+            })
     }
 
 
@@ -223,16 +274,21 @@ class SubRegionMap extends Component {
                     </span>
                 </div>
                 <div style={{ 'width': CHART_WIDTH }}
+                onMouseOver={this.onMouseMove}
+                onMouseMove={this.onMouseMove}
+                onMouseLeave={this.onMouseLeave}
+                onClick={this.onMouseClick}
                     className={'gene-finder-wrapper ' + (enableSelectionRegion ? '' : 'hide')}>
                     <div className='variable-window' id="gene-finder-window"
-                        style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
+                        style={{ height: (this.state.chartHeight + 5) + 'px' }}>
                     </div>
                 </div>
                 <canvas
-                    onMouseOver={enableSelectionRegion ? undefined : this.onMouseMove}
-                    onMouseMove={enableSelectionRegion ? undefined : this.onMouseMove}
-                    onMouseLeave={enableSelectionRegion ? undefined : this.onMouseLeave}
-                    className="triad-stack-canvas" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
+                    onMouseOver={this.onMouseMove}
+                    onMouseMove={this.onMouseMove}
+                    onMouseLeave={this.onMouseLeave}
+                    onClick={this.onMouseClick}
+                    className="triad-stack-canvas" width={CHART_WIDTH} height={this.state.chartHeight} ref={(el) => { this.canvas = el }} > </canvas>
             </div>
         );
     }

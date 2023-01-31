@@ -6,7 +6,7 @@ window.onresize = function () { location.reload() }
 const OVERALL_WIDTH = window.innerWidth * 0.95,
     // This is the right margin width created so all charts have extra
     // unallocated space for labels
-    CHART_HEIGHT = 400,
+    CHART_HEIGHT = 300,
     CHART_WIDTH = OVERALL_WIDTH,
     ZOOM_SCALE = scaleLog()
         .domain([10, CHART_WIDTH])

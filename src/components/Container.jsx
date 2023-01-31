@@ -28,8 +28,10 @@ class Container extends Component {
                             </span>
                         </div>
                         <div className='w-md footer-inner text-xs-right'>
-                            <span className='m-r'>
-                                Made with <span style={{ "color": '#e25555', 'fontSize': '19px', 'margin': '0px 3px' }}>&hearts;</span> by <a href="https://github.com/jeremy-storring">jeremy-storring</a></span>
+                            {/* <span className='m-r'>
+                                Made with <span style={{ "color": '#e25555', 'fontSize': '19px', 'margin': '0px 3px' }}>&hearts;</span> by <a href="https://github.com/jeremy-storring">jeremy-storring</a></span> */}
+                                <span className='m-r'>
+                                Developed by the HCI lab</span>
                         </div>
                     </div>
                 </footer>

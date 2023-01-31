@@ -11,12 +11,24 @@ import TriadLegend from './TriadLegend';
 
 class ChromosomeMap extends Component {
 
+    constructor(props) {
+        super(props)
+        this.state = {
+            chartHeight: CHART_HEIGHT,
+           
+        };
+        
+        
+    }
+
     componentDidMount() {
         const { chartScale, region } = this.props;
 
         let start = chartScale(region.start);
         let end = chartScale(region.end);
         let width = end - start;
+
+        
 
         var target = document.getElementById('view-finder-window');
         target.setAttribute('data-x', start);
@@ -29,13 +41,14 @@ class ChromosomeMap extends Component {
     }
 
     componentDidUpdate() {
-         
+         console.log("WEEEEE")
         this.drawChart() 
     }
 
     drawChart = () => {
-
+        console.log(this.state.chartHeight)
         const { chromosomeData = [], subGenomes = [], chartScale } = this.props;
+
         let context = clearAndGetContext(this.canvas);
 
         let chartData = _.map(chromosomeData, (dataPoint) => {
@@ -46,11 +59,12 @@ class ChromosomeMap extends Component {
 
         });
 
+
         this.attachResizing();
 
         let yMax = _.max(_.map(chartData, (d) => _.max(d)));
 
-        let scaleFactor = CHART_HEIGHT / yMax;
+        let scaleFactor = this.state.chartHeight / yMax;
 
         context.lineWidth = CHART_WIDTH / chromosomeData.length;
 
@@ -61,8 +75,8 @@ class ChromosomeMap extends Component {
             _.map(dataPoint, (d, stackIndex) => {
                 context.beginPath();
                 context.strokeStyle = schemeTableau10[stackIndex];
-                context.moveTo(padding_from_left, CHART_HEIGHT - (stackIndex == 0 ? 0 : dataPoint[stackIndex - 1] * scaleFactor));
-                context.lineTo(padding_from_left, CHART_HEIGHT - (dataPoint[stackIndex] * scaleFactor));
+                context.moveTo(padding_from_left, this.state.chartHeight - (stackIndex == 0 ? 0 : dataPoint[stackIndex - 1] * scaleFactor));
+                context.lineTo(padding_from_left, this.state.chartHeight - (dataPoint[stackIndex] * scaleFactor));
                 context.stroke();
             })
         });
@@ -124,6 +138,42 @@ class ChromosomeMap extends Component {
                 ],
                 inertia: true
             })
+
+            interact('#view-finder-wrapper').resizable({
+                // resize from all edges and corners
+                edges: { left: false, right: false, bottom: true, top: false },
+                listeners: {
+                    'move': (event) => {
+
+
+                        console.log(event.deltaRect)
+
+                        var target = event.target;
+
+                        // update the element's style
+                        let chartHeight = this.state.chartHeight + event.deltaRect.bottom;
+                        this.setState({chartHeight})
+
+                    },
+                    'end': (event) => {
+
+
+
+
+                    }
+                },
+                modifiers: [
+                    // keep the edges inside the parent
+                    // interact.modifiers.restrictEdges({
+                    //     outer: 'parent'
+                    // }),
+                    // minimum size
+                    interact.modifiers.restrictSize({
+                        min: { height: 100 }
+                    })
+                ],
+                inertia: true
+            })
     }
 
     render() {
@@ -136,12 +186,12 @@ class ChromosomeMap extends Component {
                 {hideChromosome == true ?
                     <h4 className='chart-title'>Subregion</h4> : <h4 className='chart-title'>Chromosome ({activeChromosome})</h4>}
                 <div style={{ 'width': CHART_WIDTH }}
-                    className='view-finder-wrapper'>
+                    className='view-finder-wrapper' id='view-finder-wrapper'>
                     <div className='variable-window' id="view-finder-window"
-                        style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
+                        style={{ height: (this.state.chartHeight + 5) + 'px' }}>
                     </div>
                 </div>
-                <canvas className="triad-stack-canvas snapshot" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
+                <canvas className="triad-stack-canvas snapshot" width={CHART_WIDTH} height={this.state.chartHeight} ref={(el) => { this.canvas = el }} > </canvas>
             </div>
         );
     }

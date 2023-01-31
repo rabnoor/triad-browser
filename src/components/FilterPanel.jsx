@@ -50,17 +50,43 @@ class FilterPanel extends Component {
     }
 
    
+    sumValues = obj => Object.values(obj).reduce((a, b) => a + b, 0);
 
     changeSG(className, value){
 
         let SG= className;
 
-        this.setState(prevState => ({
-        localSGValues:{
-            ...prevState.localSGValues,
-            [SG]: value
+        let valuesAll = this.state.localSGValues;
+        // this.setState(prevState => ({
+        //     localSGValues:{
+        //         ...prevState.localSGValues,
+        //         [SG]: value
+        //     }
+        //     }));
+        valuesAll[SG] = value;
+        let totalSGVal = this.sumValues(valuesAll);
+
+
+        if (totalSGVal>100){
+            let newvalue = value  - (totalSGVal - 100);
+
+
+            this.setState(prevState => ({
+                localSGValues:{
+                    ...prevState.localSGValues,
+                    [SG]: newvalue
+                }
+                }));
+            
+        }else{
+            this.setState(prevState => ({
+                localSGValues:{
+                    ...prevState.localSGValues,
+                    [SG]: value
+                }
+                }));
         }
-        }));
+
 
     }
 
@@ -71,7 +97,7 @@ class FilterPanel extends Component {
         
         let element = document.getElementById("chromID-AT1");
         let SubGenomeThreshold = this.state.localSGValues;
-        console.log(SubGenomeThreshold)
+
 
         if (document.body.contains(element)) {
             this.props.actions.setGenomeDataThreshold(SubGenomeThreshold, this.props.activeChromosome);
@@ -95,7 +121,7 @@ class FilterPanel extends Component {
         for (let i = 0; i < subGenomes.length; i++) {
             elements.push(<div key={i} className='inner-span-text' id={"SEEE"+i}>
             <b className="percent-subgenome-text" >{subGenomes[i]}</b>
-            <Slider className={subGenomes[i]} key={i} id={subGenomes[i]+"sortingPercent"}  min={0} max={100} defaultValue={0} handle={handle} 
+            <Slider className={subGenomes[i]} key={i} id={subGenomes[i]+"sortingPercent"}  min={0} max={100} defaultValue={0} value={this.state.localSGValues[subGenomes[i]]}  handle={handle} 
             onChange={(value) => {
                 this.changeSG(subGenomes[i], value);
               }}/>
@@ -135,7 +161,7 @@ class FilterPanel extends Component {
                                     id="material-switch-norm" />
                             </label>
                         </div>
-                        <span className='switch-label'>Percentage Sort</span>
+                        <span className='switch-label'>Percentage Selection</span>
                     </span>
                     {showDropDown ?
                         <div className="text-container ">
