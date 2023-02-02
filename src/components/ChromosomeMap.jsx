@@ -8,6 +8,7 @@ import { setRegion } from '../redux/actions/actions';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import TriadLegend from './TriadLegend';
+import '../assets/Styling.css'
 
 class ChromosomeMap extends Component {
 
@@ -15,13 +16,14 @@ class ChromosomeMap extends Component {
         super(props)
         this.state = {
             chartHeight: CHART_HEIGHT,
-           
+            
         };
-        
-        
+
+
     }
 
     componentDidMount() {
+
         const { chartScale, region } = this.props;
 
         let start = chartScale(region.start);
@@ -31,6 +33,15 @@ class ChromosomeMap extends Component {
         
 
         var target = document.getElementById('view-finder-window');
+
+        target.setAttribute('data-x', start);
+
+        target.style.webkitTransform = target.style.transform = 'translate(' + start + 'px,' + '0px)';
+
+        target.style.width = width + 'px';
+
+        target = document.getElementById('view-finder-window2');
+
         target.setAttribute('data-x', start);
 
         target.style.webkitTransform = target.style.transform = 'translate(' + start + 'px,' + '0px)';
@@ -41,12 +52,12 @@ class ChromosomeMap extends Component {
     }
 
     componentDidUpdate() {
-         console.log("WEEEEE")
+        
         this.drawChart() 
     }
 
     drawChart = () => {
-        console.log(this.state.chartHeight)
+
         const { chromosomeData = [], subGenomes = [], chartScale } = this.props;
 
         let context = clearAndGetContext(this.canvas);
@@ -93,12 +104,17 @@ class ChromosomeMap extends Component {
                     move(event) {
                         // Generic code that handles position of the window and sets it back onto the dom elemen
                         var target = event.target;
+                        var targetCounterpart = document.getElementById('view-finder-window2')
                         var x = (parseFloat(target.getAttribute('data-x')) || 0);
                         x += event.dx;
                         if (x >= 0 && x <= (CHART_WIDTH - event.rect.width)) {
                             target.style.webkitTransform = target.style.transform =
                                 'translate(' + x + 'px,' + '0px)'
                             target.setAttribute('data-x', x);
+
+                            targetCounterpart.style.webkitTransform = targetCounterpart.style.transform =
+                                'translate(' + x + 'px,' + '0px)'
+                                targetCounterpart.setAttribute('data-x', x);
                         }
                     },
                     end(event) {
@@ -113,6 +129,8 @@ class ChromosomeMap extends Component {
                     move(event) {
                         // Generic code that handles width and position of the window and sets it back onto the dom element
                         var target = event.target;
+                        var targetCounterpart = document.getElementById('view-finder-window2')
+
                         var x = (parseFloat(target.getAttribute('data-x')) || 0);
                         // update the element's style
                         target.style.width = event.rect.width + 'px';
@@ -121,6 +139,88 @@ class ChromosomeMap extends Component {
                         target.style.webkitTransform = target.style.transform =
                             'translate(' + x + 'px,' + '0px)'
                         target.setAttribute('data-x', x);
+
+                        var x = (parseFloat(target.getAttribute('data-x')) || 0);
+                        // update the element's style
+                        targetCounterpart.style.width = event.rect.width + 'px';
+                        // translate when resizing from left edges
+                        x += event.deltaRect.left;
+                        targetCounterpart.style.webkitTransform = target.style.transform =
+                            'translate(' + x + 'px,' + '0px)'
+                            targetCounterpart.setAttribute('data-x', x);
+
+                        
+                    },
+                    end(event) {
+                        actions.setRegion(getStartAndEnd(event.target, chartScale))
+                    }
+                },
+                modifiers: [
+                    // keep the edges inside the parent
+                    interact.modifiers.restrictEdges({
+                        outer: 'parent'
+                    }),
+                    // minimum size
+                    interact.modifiers.restrictSize({
+                        min: { width: 30 }
+                    })
+                ],
+                inertia: true
+            })
+
+            interact('#view-finder-window2')
+            .draggable({
+                inertia: true,
+                listeners: {
+                    move(event) {
+                        // Generic code that handles position of the window and sets it back onto the dom elemen
+                        var target = event.target;
+                        var targetCounterpart = document.getElementById('view-finder-window')
+                        var x = (parseFloat(target.getAttribute('data-x')) || 0);
+                        x += event.dx;
+                        if (x >= 0 && x <= (CHART_WIDTH - event.rect.width)) {
+                            target.style.webkitTransform = target.style.transform =
+                                'translate(' + x + 'px,' + '0px)'
+                            target.setAttribute('data-x', x);
+
+                            targetCounterpart.style.webkitTransform = targetCounterpart.style.transform =
+                                'translate(' + x + 'px,' + '0px)'
+                                targetCounterpart.setAttribute('data-x', x);
+                        }
+                    },
+                    end(event) {
+                        actions.setRegion(getStartAndEnd(event.target, chartScale))
+                    }
+                },
+            })
+            .resizable({
+                // resize from all edges and corners
+                edges: { left: true, right: true, bottom: false, top: false },
+                listeners: {
+                    move(event) {
+                        // Generic code that handles width and position of the window and sets it back onto the dom element
+                        var target = event.target;
+                        var targetCounterpart = document.getElementById('view-finder-window')
+
+                        var x = (parseFloat(target.getAttribute('data-x')) || 0);
+                        // update the element's style
+                        target.style.width = event.rect.width + 'px';
+                        // translate when resizing from left edges
+                        x += event.deltaRect.left;
+                        target.style.webkitTransform = target.style.transform =
+                            'translate(' + x + 'px,' + '0px)'
+                        target.setAttribute('data-x', x);
+
+                        var x = (parseFloat(target.getAttribute('data-x')) || 0);
+                        // update the element's style
+                        targetCounterpart.style.width = event.rect.width + 'px';
+                        // translate when resizing from left edges
+                        x += event.deltaRect.left;
+                        targetCounterpart.style.webkitTransform = target.style.transform =
+                            'translate(' + x + 'px,' + '0px)'
+                            targetCounterpart.setAttribute('data-x', x);
+
+                        
                     },
                     end(event) {
                         actions.setRegion(getStartAndEnd(event.target, chartScale))
@@ -146,7 +246,7 @@ class ChromosomeMap extends Component {
                     'move': (event) => {
 
 
-                        console.log(event.deltaRect)
+
 
                         var target = event.target;
 
@@ -185,14 +285,21 @@ class ChromosomeMap extends Component {
                     subGenomes={subGenomes} />
                 {hideChromosome == true ?
                     <h4 className='chart-title'>Subregion</h4> : <h4 className='chart-title'>Chromosome ({activeChromosome})</h4>}
-                <div style={{ 'width': CHART_WIDTH }}
-                    className='view-finder-wrapper' id='view-finder-wrapper'>
+
+
                     <div className='variable-window' id="view-finder-window"
-                        style={{ height: (this.state.chartHeight + 5) + 'px' }}>
+                        style={{ height: (15) + 'px' }}>
                     </div>
-                </div>
+                <div id="view-finder-wrapper">
+                
                 <canvas className="triad-stack-canvas snapshot" width={CHART_WIDTH} height={this.state.chartHeight} ref={(el) => { this.canvas = el }} > </canvas>
+                
+                </div>
+                <div className='variable-window' id="view-finder-window2"
+                        style={{ height: (15) + 'px' }}>
+                    </div>
             </div>
+            
         );
     }
 }
@@ -207,7 +314,7 @@ function getStartAndEnd(target, chartScale) {
         width = 150;
     }
     const start = Math.abs(xPosition), end = start + width;
-    console.log(start, end);
+
     return {
         'start': Math.round(chartScale.invert(start)),
         'end': Math.round(chartScale.invert(end))
@@ -228,5 +335,7 @@ function mapStateToProps(state) {
         region: state.oracle.region
     };
 }
+
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChromosomeMap);

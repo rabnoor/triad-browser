@@ -22,6 +22,7 @@ class ChromosomePage extends Component {
 
     onSubGenomeChange = (event) => {
         this.props.actions.setGenomeData(event.value, this.props.activeChromosome);
+        
     }
 
     onChromosomeChange = (activeChromosome) => {
@@ -180,7 +181,7 @@ class ChromosomePage extends Component {
 
                             <div>
                                 {/* code chunk to show tooltip*/}
-                                {isTooltipVisible && <Tooltip {...tooltipData} />}
+                                {isTooltipVisible ? <Tooltip {...tooltipData} /> : ""}
                                 <TriadGenomeMap
                                     genomeData={genomeData}
                                     subGenomes={subGenomes}

@@ -11,6 +11,7 @@ import Switch from 'react-switch';
 import TriadLegend from './TriadLegend';
 
 
+
 class SubRegionMap extends Component {
 
     constructor(props) {
@@ -19,28 +20,39 @@ class SubRegionMap extends Component {
             chartHeight: CHART_HEIGHT,
             enableSelectionRegion: false,
             geneSelected: false,
+            selectedGenelocation: null,
             region: {
                 start: 850,
                 end: 1000,
             },
+            markers: [],
+            numMarkers: 0, 
+
         };
+
     }
 
     componentDidMount() {
         this.drawChart()
     }
 
-    componentDidUpdate() { this.drawChart() }
+    componentDidUpdate() { 
+        
+
+
+        this.drawChart() }
 
     onMouseMove = (event) => {
 
         let { actions, chartScale, subRegionData } = this.props;
 
 
+
         var pageWidth = document.body.getBoundingClientRect().width,
             canvasRect = event.currentTarget.getBoundingClientRect();
 
         const xPosition = event.pageX - canvasRect.left;
+
 
 
         const referenceIndex = Math.round(chartScale.invert(xPosition)),
@@ -61,10 +73,15 @@ class SubRegionMap extends Component {
                 tooltipData['data'].push(<p key={propt+"tooltipinfo"}><b><span style={{color: tooltipColor}}>{propt}</span>: </b><span>{Math.round(dataPoint[propt])+"%"}</span></p>)}
                 Prptindex++ ;
         }
-        // console.log(tooltipData)
+
         if (!this.state.geneSelected){
         actions.showTooltip(true, tooltipData);
 }
+    }
+
+    onMarkerMove(data){
+
+        this.props.actions.showTooltip(true,data);
     }
 
     onToggleRegionWindow = (enableSelectionRegion) => {
@@ -87,17 +104,82 @@ class SubRegionMap extends Component {
 
         this.setState({ enableSelectionRegion });
     };
-    onMouseClick= (event) => { this.state.geneSelected = !this.state.geneSelected ;
+    onMouseClick= (event) => { 
+
+        var pageWidth = document.body.getBoundingClientRect().width,
+            canvasRect = event.currentTarget.getBoundingClientRect();
+
+        const xPosition = event.pageX - canvasRect.left;
+
+
+
+        if (!this.state.geneSelected){
+            this.drawMarker(xPosition,event.pageY)
+        }
+        
+        this.state.geneSelected = !this.state.geneSelected ;
+       
 
     }
     onMouseLeave = (event) => { 
         if (!this.state.geneSelected){
-            console.log(this.state.geneSelected)
         this.props.actions.showTooltip(false) }
 
-}    
+}
+
+    drawMarker(xLocation,yLocation){
+
+        let { actions, chartScale, subRegionData } = this.props;
+
+        var pageWidth = document.body.getBoundingClientRect().width;
+
+
+        const xPosition = xLocation;
+
+
+
+        const referenceIndex = Math.round(chartScale.invert(xPosition)),
+            dataPoint = subRegionData[referenceIndex];
+
+
+        let tooltipData = {
+            'x': xLocation + 200 > pageWidth ? xLocation- 200 : xLocation + 25,
+            'y': yLocation - 50,
+            'gene': dataPoint.Gene,
+            'data' : []
+        }
+        let Prptindex = 0;
+        for(var propt in dataPoint){
+            if (typeof(dataPoint[propt]) == 'number'){
+                tooltipData[propt] = dataPoint[propt]
+                let tooltipColor = schemeTableau10[Prptindex-1];
+                tooltipData['data'].push(<p key={propt+"tooltipinfo"}><b><span style={{color: tooltipColor}}>{propt}</span>: </b><span>{Math.round(dataPoint[propt])+"%"}</span></p>)}
+                Prptindex++ ;
+        }
+
+        this.state.markers.push(<div className='geneMarker' key = {xLocation} onMouseOver={()=>this.onMarkerMove(tooltipData)}
+        style={{ height: (15) + 'px' , left: (xLocation-10) + 'px'}}>
+            
+    </div>)
+
+    if (this.state.markers.length>10){
+        this.state.markers.shift();
+    }
+
+    }
+
+    eraseMarkers =() => {
+        this.props.actions.showTooltip(true, [])
+
+        this.state.markers.length = 0;
+        let numMarkers = 0;
+        this.setState({numMarkers})
+
+    }
 
     drawChart = () => {
+
+        this.state.geneSelected = false ;
 
         const { subRegionData = [], subGenomes = [], chartScale } = this.props;
         let context = clearAndGetContext(this.canvas);
@@ -150,13 +232,18 @@ class SubRegionMap extends Component {
                     'move': (event) => {
                         // Generic code that handles position of the window and sets it back onto the dom elemen
                         var target = event.target;
+                        var targetCounterpart = document.getElementById('gene-finder-window2')
                         var x = (parseFloat(target.getAttribute('data-x')) || 0);
                         x += event.dx;
                         if (x >= 0 && x <= (CHART_WIDTH - event.rect.width)) {
                             target.style.webkitTransform = target.style.transform =
                                 'translate(' + x + 'px,' + '0px)'
                             target.setAttribute('data-x', x);
+                            targetCounterpart.style.webkitTransform = targetCounterpart.style.transform =
+                                'translate(' + x + 'px,' + '0px)'
+                                targetCounterpart.setAttribute('data-x', x);
                         }
+                        
                     },
                     'end': (event) => {
                         this.setRegion(getStartAndEnd(event.target, chartScale));
@@ -170,6 +257,7 @@ class SubRegionMap extends Component {
                     'move': (event) => {
                         // Generic code that handles width and position of the window and sets it back onto the dom element
                         var target = event.target;
+                        var targetCounterpart = document.getElementById('gene-finder-window2')
                         var x = (parseFloat(target.getAttribute('data-x')) || 0);
                         // update the element's style
                         target.style.width = event.rect.width + 'px';
@@ -178,6 +266,13 @@ class SubRegionMap extends Component {
                         target.style.webkitTransform = target.style.transform =
                             'translate(' + x + 'px,' + '0px)'
                         target.setAttribute('data-x', x);
+
+                        targetCounterpart.style.width = event.rect.width + 'px';
+                        // translate when resizing from left edges
+                        x += event.deltaRect.left;
+                        targetCounterpart.style.webkitTransform = targetCounterpart.style.transform =
+                            'translate(' + x + 'px,' + '0px)'
+                            targetCounterpart.setAttribute('data-x', x);
                     },
                     'end': (event) => {
                         this.setRegion(getStartAndEnd(event.target, chartScale));
@@ -196,6 +291,74 @@ class SubRegionMap extends Component {
                 inertia: true
             })
 
+
+            interact('#gene-finder-window2')
+            .draggable({
+                inertia: true,
+                listeners: {
+                    'move': (event) => {
+                        // Generic code that handles position of the window and sets it back onto the dom elemen
+                        var target = event.target;
+                        var targetCounterpart = document.getElementById('gene-finder-window')
+                        var x = (parseFloat(target.getAttribute('data-x')) || 0);
+                        x += event.dx;
+                        if (x >= 0 && x <= (CHART_WIDTH - event.rect.width)) {
+                            target.style.webkitTransform = target.style.transform =
+                                'translate(' + x + 'px,' + '0px)'
+                            target.setAttribute('data-x', x);
+                            targetCounterpart.style.webkitTransform = targetCounterpart.style.transform =
+                                'translate(' + x + 'px,' + '0px)'
+                                targetCounterpart.setAttribute('data-x', x);
+                        }
+                        
+                    },
+                    'end': (event) => {
+                        this.setRegion(getStartAndEnd(event.target, chartScale));
+                    }
+                },
+            })
+            .resizable({
+                // resize from all edges and corners
+                edges: { left: true, right: true, bottom: false, top: false },
+                listeners: {
+                    'move': (event) => {
+                        // Generic code that handles width and position of the window and sets it back onto the dom element
+                        var target = event.target;
+                        var targetCounterpart = document.getElementById('gene-finder-window')
+                        var x = (parseFloat(target.getAttribute('data-x')) || 0);
+                        // update the element's style
+                        target.style.width = event.rect.width + 'px';
+                        // translate when resizing from left edges
+                        x += event.deltaRect.left;
+                        target.style.webkitTransform = target.style.transform =
+                            'translate(' + x + 'px,' + '0px)'
+                        target.setAttribute('data-x', x);
+
+                        targetCounterpart.style.width = event.rect.width + 'px';
+                        // translate when resizing from left edges
+                        x += event.deltaRect.left;
+                        targetCounterpart.style.webkitTransform = targetCounterpart.style.transform =
+                            'translate(' + x + 'px,' + '0px)'
+                            targetCounterpart.setAttribute('data-x', x);
+                    },
+                    'end': (event) => {
+                        this.setRegion(getStartAndEnd(event.target, chartScale));
+                    }
+                },
+                modifiers: [
+                    // keep the edges inside the parent
+                    interact.modifiers.restrictEdges({
+                        outer: 'parent'
+                    }),
+                    // minimum size
+                    interact.modifiers.restrictSize({
+                        min: { width: 30 }
+                    })
+                ],
+                inertia: true
+            })
+
+
             interact(this.canvas).resizable({
                 // resize from all edges and corners
                 edges: { left: false, right: false, bottom: true, top: false },
@@ -203,9 +366,8 @@ class SubRegionMap extends Component {
                     'move': (event) => {
                         // Generic code that handles width and position of the window and sets it back onto the dom element
 
-                        console.log(event.deltaRect)
-                        // this.state.chartHeight -= event.delta.y;
-                        // this.drawChart()
+
+
                         var target = event.target;
 
                         // update the element's style
@@ -220,7 +382,7 @@ class SubRegionMap extends Component {
                     },
                     'end': (event) => {
                         // this.setRegion(getStartAndEnd(event.target, chartScale));
-                        console.log(this.state.chartHeight);
+
 
 
                     }
@@ -251,10 +413,13 @@ class SubRegionMap extends Component {
                         subGenomes={subGenomes} />
                     {hideChromosome == true ?
                         <h4 className='chart-title'>Inner Subregion</h4> : <h4 className='chart-title'>Subregion ({activeChromosome})</h4>}
-                    <span className='switch-container'>
-                        <div className='switch-inner'>
-                            <label htmlFor="material-switch-norm">
-                                <Switch
+                            <button onClick={this.eraseMarkers}>
+                                Erase Markers 
+                                </button>
+                    {/* <span className='switch-container'>
+                        <div className='switch-inner'> */}
+                            {/* <label htmlFor="material-switch-norm"> */}
+                                {/* <Switch
                                     checked={enableSelectionRegion}
                                     onChange={this.onToggleRegionWindow}
                                     onColor="#86d3ff"
@@ -268,28 +433,39 @@ class SubRegionMap extends Component {
                                     width={35}
                                     className="react-switch"
                                     id="material-switch-norm" />
-                            </label>
-                        </div>
-                        <span className='switch-label'>Select Region</span>
-                    </span>
+                            </label> */}
+                        {/* </div> */}
+                        {/* <span className='switch-label'>Select Region</span> */}
+                    {/* </span> */}
                 </div>
-                <div style={{ 'width': CHART_WIDTH }}
+                {/* <div style={{ 'width': CHART_WIDTH }}
                 onMouseOver={this.onMouseMove}
                 onMouseMove={this.onMouseMove}
                 onMouseLeave={this.onMouseLeave}
                 onClick={this.onMouseClick}
-                    className={'gene-finder-wrapper ' + (enableSelectionRegion ? '' : 'hide')}>
+                    className={'gene-finder-wrapper ' + (enableSelectionRegion ? '' : 'hide')}> */}
+                    
+                    {this.state.markers}
+                    
                     <div className='variable-window' id="gene-finder-window"
-                        style={{ height: (this.state.chartHeight + 5) + 'px' }}>
+                        style={{ height: (15) + 'px' }}>
                     </div>
-                </div>
+
+                  
+
+                {/* </div> */}
                 <canvas
                     onMouseOver={this.onMouseMove}
                     onMouseMove={this.onMouseMove}
                     onMouseLeave={this.onMouseLeave}
                     onClick={this.onMouseClick}
                     className="triad-stack-canvas" width={CHART_WIDTH} height={this.state.chartHeight} ref={(el) => { this.canvas = el }} > </canvas>
+            
+            <div className='variable-window' id="gene-finder-window2"
+                        style={{ height: (15) + 'px' }}>
+                    </div>
             </div>
+
         );
     }
 }

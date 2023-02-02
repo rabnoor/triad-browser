@@ -4,8 +4,8 @@
     padding-bottom: 20px;
 
     .view-finder-wrapper {
-        z-index: 30;
-        position: absolute;
+
+        position: relative;
     }
 
     .variable-window {
@@ -15,5 +15,15 @@
         touch-action: none;
         box-sizing: border-box;
         border-bottom: 5px solid #7e7e7e;
+    }
+
+    .geneMarker {
+        position: absolute;
+        width: 0; 
+        height: 0; 
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        
+        border-top: 20px solid #f00;
     }
 }

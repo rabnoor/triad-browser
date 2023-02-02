@@ -1,13 +1,18 @@
 import * as types from './actionTypes';
 import _ from 'lodash';
+import { dispatch } from 'd3-dispatch';
 
 export function showTooltip(isTooltipVisible, tooltipData) {
     return dispatch => {
+
+
         if (!!tooltipData) {
+
             dispatch({ type: types.SET_TOOLTIP_DATA, tooltipData });
             dispatch(setActiveGenes([tooltipData.gene]));
             dispatch({ type: types.SET_TOOLTIP_VISIBILITY, isTooltipVisible });
         } else {
+
             dispatch({ type: types.SET_TOOLTIP_VISIBILITY, isTooltipVisible });
             dispatch(setActiveGenes([]));
         }
@@ -144,7 +149,11 @@ export function setGenomeViewData(genomeViewData) {
 }
 
 export function setRegion(region) {
-    return ({ type: types.SET_REGION, region });
+
+    let toSet = false
+    return dispatch => {dispatch({ type: types.SET_REGION, region });
+    dispatch({ type: types.SET_TOOLTIP_VISIBILITY, toSet })
+}
 }
 
 export function setGenomeRegion(genomeRegion) {
