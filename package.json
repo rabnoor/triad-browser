@@ -28,6 +28,7 @@
         "rc-slider": "^9.7.2",
         "react": "^16.13.1",
         "react-burger-menu": "^3.0.6",
+        "react-copy-to-clipboard": "^5.1.0",
         "react-dom": "^16.13.1",
         "react-loading": "^2.0.3",
         "react-numeric-input": "^2.2.3",

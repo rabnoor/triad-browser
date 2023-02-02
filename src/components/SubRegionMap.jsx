@@ -63,6 +63,8 @@ class SubRegionMap extends Component {
             'x': event.pageX + 200 > pageWidth ? event.pageX - 200 : event.pageX + 25,
             'y': event.pageY - 50,
             'gene': dataPoint.Gene,
+            'subGenomeInfo': {},
+
             'data' : []
         }
         let Prptindex = 0;
@@ -70,6 +72,8 @@ class SubRegionMap extends Component {
             if (typeof(dataPoint[propt]) == 'number'){
                 tooltipData[propt] = dataPoint[propt]
                 let tooltipColor = schemeTableau10[Prptindex-1];
+                tooltipData['subGenomeInfo'][propt]  = dataPoint[propt];
+
                 tooltipData['data'].push(<p key={propt+"tooltipinfo"}><b><span style={{color: tooltipColor}}>{propt}</span>: </b><span>{Math.round(dataPoint[propt])+"%"}</span></p>)}
                 Prptindex++ ;
         }
@@ -146,12 +150,15 @@ class SubRegionMap extends Component {
             'x': xLocation + 200 > pageWidth ? xLocation- 200 : xLocation + 25,
             'y': yLocation - 50,
             'gene': dataPoint.Gene,
+            'subGenomeInfo': {},
             'data' : []
         }
         let Prptindex = 0;
         for(var propt in dataPoint){
             if (typeof(dataPoint[propt]) == 'number'){
                 tooltipData[propt] = dataPoint[propt]
+                tooltipData['subGenomeInfo'][propt]  = dataPoint[propt];
+
                 let tooltipColor = schemeTableau10[Prptindex-1];
                 tooltipData['data'].push(<p key={propt+"tooltipinfo"}><b><span style={{color: tooltipColor}}>{propt}</span>: </b><span>{Math.round(dataPoint[propt])+"%"}</span></p>)}
                 Prptindex++ ;
