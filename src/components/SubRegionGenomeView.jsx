@@ -32,6 +32,13 @@ class SubRegionGenomeView extends Component {
 
         target.style.width = width + 'px';
 
+        target = document.getElementById('view-finder-window2');
+        target.setAttribute('data-x', start);
+
+        target.style.webkitTransform = target.style.transform = 'translate(' + start + 'px,' + '0px)';
+
+        target.style.width = width + 'px';
+
         this.drawChart()
     }
 
@@ -92,6 +99,12 @@ class SubRegionGenomeView extends Component {
                             target.style.webkitTransform = target.style.transform =
                                 'translate(' + x + 'px,' + '0px)'
                             target.setAttribute('data-x', x);
+
+                            target = document.getElementById("view-finder-window2")
+
+                            target.style.webkitTransform = target.style.transform =
+                                'translate(' + x + 'px,' + '0px)'
+                            target.setAttribute('data-x', x);
                         }
                     },
                     end(event) {
@@ -114,6 +127,14 @@ class SubRegionGenomeView extends Component {
                         target.style.webkitTransform = target.style.transform =
                             'translate(' + x + 'px,' + '0px)'
                         target.setAttribute('data-x', x);
+
+
+                        target = document.getElementById("view-finder-window2")
+
+                        target.style.webkitTransform = target.style.transform =
+                        'translate(' + x + 'px,' + '0px)'
+                    target.setAttribute('data-x', x);
+
                     },
                     end(event) {
                         actions.setRegion(getStartAndEnd(event.target, chartScale))
@@ -131,6 +152,75 @@ class SubRegionGenomeView extends Component {
                 ],
                 inertia: true
             })
+
+
+
+        interact('#view-finder-window2')
+        .draggable({
+            inertia: true,
+            listeners: {
+                move(event) {
+                    // Generic code that handles position of the window and sets it back onto the dom elemen
+                    var target = event.target;
+                    var x = (parseFloat(target.getAttribute('data-x')) || 0);
+                    x += event.dx;
+                    if (x >= 0 && x <= (CHART_WIDTH - event.rect.width)) {
+                        target.style.webkitTransform = target.style.transform =
+                            'translate(' + x + 'px,' + '0px)'
+                        target.setAttribute('data-x', x);
+
+                        target = document.getElementById("view-finder-window")
+
+                        target.style.webkitTransform = target.style.transform =
+                            'translate(' + x + 'px,' + '0px)'
+                        target.setAttribute('data-x', x);
+                    }
+                },
+                end(event) {
+                    actions.setRegion(getStartAndEnd(event.target, chartScale))
+                }
+            },
+        })
+        .resizable({
+            // resize from all edges and corners
+            edges: { left: true, right: true, bottom: false, top: false },
+            listeners: {
+                move(event) {
+                    // Generic code that handles width and position of the window and sets it back onto the dom element
+                    var target = event.target;
+                    var x = (parseFloat(target.getAttribute('data-x')) || 0);
+                    // update the element's style
+                    target.style.width = event.rect.width + 'px';
+                    // translate when resizing from left edges
+                    x += event.deltaRect.left;
+                    target.style.webkitTransform = target.style.transform =
+                        'translate(' + x + 'px,' + '0px)'
+                    target.setAttribute('data-x', x);
+
+
+                    target = document.getElementById("view-finder-window")
+
+                    target.style.webkitTransform = target.style.transform =
+                    'translate(' + x + 'px,' + '0px)'
+                target.setAttribute('data-x', x);
+
+                },
+                end(event) {
+                    actions.setRegion(getStartAndEnd(event.target, chartScale))
+                }
+            },
+            modifiers: [
+                // keep the edges inside the parent
+                interact.modifiers.restrictEdges({
+                    outer: 'parent'
+                }),
+                // minimum size
+                interact.modifiers.restrictSize({
+                    min: { width: 30 }
+                })
+            ],
+            inertia: true
+        })
     }
 
     render() {
@@ -142,13 +232,17 @@ class SubRegionGenomeView extends Component {
                     subGenomes={subGenomes} />
                 {hideChromosome == true ?
                     <h4 className='chart-title'>Subregion</h4> : <h4 className='chart-title'>Chromosome ({activeChromosome})</h4>}
+                    <div className='variable-window' id="view-finder-window"
+                        style={{ height: (15) + 'px' }}>
+                    </div>
                 <div style={{ 'width': CHART_WIDTH }}
                     className='view-finder-wrapper'>
-                    <div className='variable-window' id="view-finder-window"
-                        style={{ height: (CHART_HEIGHT + 5) + 'px' }}>
-                    </div>
+                    
                 </div>
                 <canvas colorRendering="optimizeQuality" className="triad-stack-canvas snapshot" width={CHART_WIDTH} height={CHART_HEIGHT} ref={(el) => { this.canvas = el }} > </canvas>
+                <div className='variable-window' id="view-finder-window2"
+                        style={{ height: (15) + 'px' }}>
+                    </div>
             </div>
         );
     }

@@ -157,6 +157,7 @@ export function setRegion(region) {
 }
 
 export function setGenomeRegion(genomeRegion) {
+    console.log("WEWEWEWEWEW")
     return ({ type: types.SET_GENOME_REGION, genomeRegion })
 }
 

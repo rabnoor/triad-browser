@@ -58,7 +58,7 @@ class SubRegionMap extends Component {
         const referenceIndex = Math.round(chartScale.invert(xPosition)),
             dataPoint = subRegionData[referenceIndex];
 
-
+        console.log(dataPoint)
         let tooltipData = {
             'x': event.pageX + 200 > pageWidth ? event.pageX - 200 : event.pageX + 25,
             'y': event.pageY - 50,
