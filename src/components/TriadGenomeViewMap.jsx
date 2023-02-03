@@ -126,10 +126,16 @@ class TriadGenomeViewMap extends Component {
 
 
                         target = document.getElementById('genome-finder-window2')
-
+                        var x = (parseFloat(target.getAttribute('data-x')) || 0);
+                        // update the element's style
+                        target.style.width = event.rect.width + 'px';
+                        // translate when resizing from left edges
+                        x += event.deltaRect.left;
                         target.style.webkitTransform = target.style.transform =
                             'translate(' + x + 'px,' + '0px)'
                         target.setAttribute('data-x', x);
+
+                      
 
 
                     },
@@ -195,10 +201,15 @@ class TriadGenomeViewMap extends Component {
 
                         target = document.getElementById('genome-finder-window')
 
+                      
+                        var x = (parseFloat(target.getAttribute('data-x')) || 0);
+                        // update the element's style
+                        target.style.width = event.rect.width + 'px';
+                        // translate when resizing from left edges
+                        x += event.deltaRect.left;
                         target.style.webkitTransform = target.style.transform =
                             'translate(' + x + 'px,' + '0px)'
                         target.setAttribute('data-x', x);
-
 
                     },
                     end(event) {

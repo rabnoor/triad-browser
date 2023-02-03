@@ -130,7 +130,7 @@ class SubRegionGenomeView extends Component {
 
 
                         target = document.getElementById("view-finder-window2")
-
+                        target.style.width = event.rect.width + 'px';
                         target.style.webkitTransform = target.style.transform =
                         'translate(' + x + 'px,' + '0px)'
                     target.setAttribute('data-x', x);
@@ -199,6 +199,7 @@ class SubRegionGenomeView extends Component {
 
 
                     target = document.getElementById("view-finder-window")
+                    target.style.width = event.rect.width + 'px';
 
                     target.style.webkitTransform = target.style.transform =
                     'translate(' + x + 'px,' + '0px)'
