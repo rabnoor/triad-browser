@@ -54,6 +54,8 @@ class FilterPanel extends Component {
 
     changeSG(className, value){
 
+
+
         let SG= className;
 
         let valuesAll = this.state.localSGValues;
@@ -94,7 +96,8 @@ class FilterPanel extends Component {
     onClickFunction=()=>{
 
 
-        
+        this.props.markers.length = 0
+
         let element = document.getElementById("chromID-AT1");
         let SubGenomeThreshold = this.state.localSGValues;
 

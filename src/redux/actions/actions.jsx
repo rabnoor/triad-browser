@@ -9,12 +9,12 @@ export function showTooltip(isTooltipVisible, tooltipData) {
         if (!!tooltipData) {
 
             dispatch({ type: types.SET_TOOLTIP_DATA, tooltipData });
-            dispatch(setActiveGenes([tooltipData.gene]));
+            // dispatch(setActiveGenes([tooltipData.gene]));
             dispatch({ type: types.SET_TOOLTIP_VISIBILITY, isTooltipVisible });
         } else {
 
             dispatch({ type: types.SET_TOOLTIP_VISIBILITY, isTooltipVisible });
-            dispatch(setActiveGenes([]));
+            // dispatch(setActiveGenes([]));
         }
     };
 }
@@ -24,6 +24,8 @@ export function showTooltip(isTooltipVisible, tooltipData) {
 export function setChromosomeData(activeChromosome, genomeData) {
     const chromosomeData = genomeData[activeChromosome];
     return dispatch => {
+        dispatch(setActiveGenes([]));
+        dispatch(showTooltip(false));
         dispatch({ type: types.SET_ACTIVE_CHROMOSOME, activeChromosome });
         dispatch({ type: types.SET_CHROMOSOME_DATA, chromosomeData });
     };
@@ -41,6 +43,9 @@ export function setGenomeData(activeSubGenome, activeChromosome) {
     }
 
     return dispatch => {
+        dispatch(setActiveGenes([]));
+        dispatch(showTooltip(false));
+
         dispatch({ type: types.SET_ACTIVE_SUBGENOME, activeSubGenome });
         dispatch({ type: types.SET_CHROMOSOME_DATA, chromosomeData });
         dispatch({ type: types.SET_GENOME_DATA, genomeData });
@@ -69,6 +74,10 @@ export function setGenomeDataThreshold(activeSubGenome, activeChromosome) {
 
     chromosomeData = genomeData[activeChromosome];
     return dispatch => {
+
+        dispatch(setActiveGenes([]));
+        dispatch(showTooltip(false));
+
         dispatch({ type: types.SET_CHROMOSOME_DATA, chromosomeData });
         dispatch({ type: types.SET_GENOME_DATA, genomeData });
     };
@@ -87,6 +96,9 @@ export function sortGenomeViewData(activeSubGenome) {
     }
 
     return dispatch => {
+        dispatch(setActiveGenes([]));
+        dispatch(showTooltip(false));
+
         dispatch({ type: types.SET_ACTIVE_SUBGENOME, activeSubGenome });
         dispatch({ type: types.SET_GENOME_VIEW_DATA, genomeViewData });
     };
@@ -111,6 +123,9 @@ export function sortGenomeViewDataThreshold(activeSubGenome, activeChromosome) {
             sortingLogic(activeSubGenome, d)
         );
     return dispatch => {
+        dispatch(setActiveGenes([]));
+        dispatch(showTooltip(false));
+
         dispatch({ type: types.SET_ACTIVE_SUBGENOME, activeSubGenome });
         dispatch({ type: types.SET_GENOME_VIEW_DATA, genomeViewData });
     };
@@ -151,7 +166,12 @@ export function setGenomeViewData(genomeViewData) {
 export function setRegion(region) {
 
     let toSet = false
-    return dispatch => {dispatch({ type: types.SET_REGION, region });
+    return dispatch => {
+        
+        // dispatch(setActiveGenes([]));
+        dispatch(showTooltip(false));
+
+        dispatch({ type: types.SET_REGION, region });
     dispatch({ type: types.SET_TOOLTIP_VISIBILITY, toSet })
 }
 }

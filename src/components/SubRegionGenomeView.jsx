@@ -268,7 +268,7 @@ function getStartAndEnd(target, chartScale) {
         width = 150;
     }
     const start = Math.abs(xPosition), end = start + width;
-    console.log(start, end);
+    // console.log(start, end);
     return {
         'start': Math.round(chartScale.invert(start)),
         'end': Math.round(chartScale.invert(end))

@@ -12,8 +12,10 @@ class GeneRefMap extends Component {
     componentDidUpdate() { this.drawChart() }
 
     drawChart = () => {
+        
 
         const { geneData = [], activeGenes = [], activeChromosome = '' } = this.props;
+
         let tempData = geneData[activeChromosome.toLocaleLowerCase()] || [];
         // Start drawing the gene map here 
         const sortedGeneData = _.sortBy(tempData, (d) => d.start);

@@ -92,26 +92,7 @@ class SubRegionMap extends Component {
         this.props.actions.showTooltip(true,data);
     }
 
-    onToggleRegionWindow = (enableSelectionRegion) => {
-        // Remove active genes when switching modes
 
-        const { subRegionData } = this.props;
-
-        const chartScale = scaleLinear()
-            .domain([0, subRegionData.length - 1])
-            .range([0, CHART_WIDTH]);
-
-        var target = document.getElementById('gene-finder-window');
-
-        if (enableSelectionRegion) {
-            this.setRegion(getStartAndEnd(target, chartScale));
-        }
-        else {
-            this.props.actions.setActiveGenes([]);
-        }
-
-        this.setState({ enableSelectionRegion });
-    };
     onMouseClick= (event) => { 
 
         var pageWidth = document.body.getBoundingClientRect().width,
@@ -179,12 +160,15 @@ class SubRegionMap extends Component {
         this.props.markers.shift();
     }
 
+
     }
 
     eraseMarkers =() => {
 
 
-
+        this.props.actions.showTooltip(true)
+        this.props.actions.showTooltip(false)
+        
         this.props.markers.length = 0;
         let numMarkers = 0;
         this.setState({numMarkers})
