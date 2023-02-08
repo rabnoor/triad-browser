@@ -52,7 +52,7 @@ class ChromosomeMap extends Component {
     }
 
     componentDidUpdate() {
-        
+        console.log("HERETOOOOO")
         this.drawChart() 
     }
 
@@ -95,7 +95,7 @@ class ChromosomeMap extends Component {
 
     attachResizing = () => {
 
-        const { chartScale, actions } = this.props;
+        const { chartScale, actions, markers } = this.props;
 
         interact('#view-finder-window')
             .draggable({
@@ -118,6 +118,8 @@ class ChromosomeMap extends Component {
                         }
                     },
                     end(event) {
+                        markers.length  = 0;
+
                         actions.setRegion(getStartAndEnd(event.target, chartScale))
                     }
                 },
@@ -152,6 +154,8 @@ class ChromosomeMap extends Component {
                         
                     },
                     end(event) {
+                        markers.length  = 0;
+
                         actions.setRegion(getStartAndEnd(event.target, chartScale))
                     }
                 },
@@ -189,6 +193,8 @@ class ChromosomeMap extends Component {
                         }
                     },
                     end(event) {
+                        markers.length  = 0;
+
                         actions.setRegion(getStartAndEnd(event.target, chartScale))
                     }
                 },
@@ -223,6 +229,8 @@ class ChromosomeMap extends Component {
                         
                     },
                     end(event) {
+                        markers.length  = 0;
+
                         actions.setRegion(getStartAndEnd(event.target, chartScale))
                     }
                 },

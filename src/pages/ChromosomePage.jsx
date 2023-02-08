@@ -13,16 +13,18 @@ class ChromosomePage extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            markers: [],
+            numMarkers: 0, 
             loader: false,
             hideChromosome: false,
             subGenomes: [],
             chromosomes: [],
+
         }
     }
 
     onSubGenomeChange = (event) => {
         this.props.actions.setGenomeData(event.value, this.props.activeChromosome);
-        
     }
 
     onChromosomeChange = (activeChromosome) => {
@@ -181,18 +183,23 @@ class ChromosomePage extends Component {
 
                             <div>
                                 {/* code chunk to show tooltip*/}
-                                {isTooltipVisible ? <Tooltip {...tooltipData} /> : ""}
+                                {isTooltipVisible && <Tooltip {...tooltipData} />}
                                 <TriadGenomeMap
                                     genomeData={genomeData}
                                     subGenomes={subGenomes}
                                     chartScale={chartScale}
                                     chromosomes={chromosomes}
-                                    onChromosomeChange={this.onChromosomeChange} />
+                                    onChromosomeChange={this.onChromosomeChange} 
+                                    markers = {this.state.markers}
+                                    numMarkers = {this.state.numMarkers}/>
                                 <ChromosomeMap
                                     subGenomes={subGenomes}
                                     hideChromosome={hideChromosome}
                                     activeChromosome={activeChromosome}
                                     chromosomeData={chromosomeData}
+                                    markers = {this.state.markers}
+                                    numMarkers = {this.state.numMarkers}
+
                                     chartScale={chartScale} />
                                 <SubRegionMap
                                     subGenomes={subGenomes}
@@ -200,6 +207,8 @@ class ChromosomePage extends Component {
                                     activeChromosome={activeChromosome}
                                     subRegionData={innerTriadData}
                                     chartScale={innerChartScale}
+                                    markers = {this.state.markers}
+                                    numMarkers = {this.state.numMarkers}
                                 />
                                 <GeneRefMap />
                             </div>
@@ -234,6 +243,7 @@ function mapStateToProps(state) {
         isTooltipVisible: state.oracle.isTooltipVisible,
         tooltipData: state.oracle.tooltipData,
         region: state.oracle.region
+
     };
 }
 

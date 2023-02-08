@@ -3,9 +3,21 @@ import { CHART_WIDTH, CHART_HEIGHT } from '../utils/chartConstants';
 import { clearAndGetContext } from '../utils/canvasUtilities';
 import _ from 'lodash';
 import { schemeTableau10, scaleLinear } from 'd3';
+import interact from 'interactjs';
 
 
 export default class TriadStackedMap extends Component {
+
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            chartHeight: CHART_HEIGHT,
+            
+        };
+
+
+    }
 
     componentDidMount() {
         const { genomeData = [], subGenomes = [], chromosomes = [] } = this.props;
@@ -42,9 +54,11 @@ export default class TriadStackedMap extends Component {
 
         });
 
+        this.attachResizing();
+
         let yMax = _.max(_.map(chartData, (d) => _.max(d)));
 
-        let scaleFactor = CHART_HEIGHT / yMax;
+        let scaleFactor = this.state.chartHeight / yMax;
 
         context.lineWidth = subWidth / genomeData[chromosome].length;
 
@@ -56,11 +70,50 @@ export default class TriadStackedMap extends Component {
             _.map(dataPoint, (d, stackIndex) => {
                 context.beginPath();
                 context.strokeStyle = schemeTableau10[stackIndex];
-                context.moveTo(padding_from_left, CHART_HEIGHT - (stackIndex == 0 ? 0 : dataPoint[stackIndex - 1] * scaleFactor));
-                context.lineTo(padding_from_left, CHART_HEIGHT - (dataPoint[stackIndex] * scaleFactor));
+                context.moveTo(padding_from_left, this.state.chartHeight - (stackIndex == 0 ? 0 : dataPoint[stackIndex - 1] * scaleFactor));
+                context.lineTo(padding_from_left, this.statechartHeight - (dataPoint[stackIndex] * scaleFactor));
                 context.stroke();
             })
         });
+    }
+
+    attachResizing = ()  => {
+        console.log("WEWEWE")
+
+        interact('.genomemap-canvas').resizable({
+            // resize from all edges and corners
+            edges: { left: false, right: false, bottom: true, top: true },
+            listeners: {
+                'move': (event) => {
+
+
+
+
+                    var target = event.target;
+
+                    // update the element's style
+                    let chartHeight = this.state.chartHeight + event.deltaRect.bottom;
+                    this.setState({chartHeight})
+
+                },
+                'end': (event) => {
+
+                }
+            },
+            modifiers: [
+                // keep the edges inside the parent
+                // interact.modifiers.restrictEdges({
+                //     outer: 'parent'
+                // }),
+                // minimum size
+                interact.modifiers.restrictSize({
+                    min: { height: 100 }
+                })
+            ],
+            inertia: true
+        })
+
+        
     }
 
     render() {
@@ -75,14 +128,14 @@ export default class TriadStackedMap extends Component {
                 onClick={this.chromosomeClick}>
                 <canvas className='genomemap-canvas'
                     width={subWidth}
-                    height={CHART_HEIGHT}
+                    height={this.state.chartHeight}
                     ref={(el) => { this['canvas-' + chrom] = el }} />
                 <h3>{chrom}</h3>
             </div>
         });
 
         return (
-            <div className='genomemap-container'>
+            <div className='genomemap-container' id='genomemap-container'>
                 <h4 className='text-primary chart-title'>Genome</h4>
                 {canvasList}
             </div>

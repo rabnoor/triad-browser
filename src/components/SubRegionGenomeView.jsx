@@ -12,7 +12,7 @@ import TriadLegend from './TriadLegend';
 class SubRegionGenomeView extends Component {
 
     componentDidMount() {
-        const { chartScale, chromosomeData = [] } = this.props;
+        const { chartScale, chromosomeData = [], actions } = this.props;
 
         let genomeWindowRange = chartScale.invert(75);
 
@@ -25,7 +25,7 @@ class SubRegionGenomeView extends Component {
         end = chartScale(end);
         let width = end - start;
 
-        var target = document.getElementById('view-finder-window');
+        let target = document.getElementById('view-finder-window');
         target.setAttribute('data-x', start);
 
         target.style.webkitTransform = target.style.transform = 'translate(' + start + 'px,' + '0px)';
@@ -39,6 +39,13 @@ class SubRegionGenomeView extends Component {
 
         target.style.width = width + 'px';
 
+        actions.setRegion(getStartAndEnd(target, chartScale))
+
+       
+
+
+
+
         this.drawChart()
     }
 
@@ -50,6 +57,8 @@ class SubRegionGenomeView extends Component {
     drawChart = () => {
 
         const { chromosomeData = [], subGenomes = [], chartScale } = this.props;
+
+
         let context = clearAndGetContext(this.canvas);
 
         let chartData = _.map(chromosomeData, (dataPoint) => {

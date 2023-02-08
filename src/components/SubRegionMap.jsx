@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { CHART_WIDTH, CHART_HEIGHT } from '../utils/chartConstants';
 import { clearAndGetContext } from '../utils/canvasUtilities';
 import _ from 'lodash';
+import { Tooltip } from '../components';
+
 import { schemeTableau10, scaleLinear } from 'd3';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -20,13 +22,14 @@ class SubRegionMap extends Component {
             chartHeight: CHART_HEIGHT,
             enableSelectionRegion: false,
             geneSelected: false,
+
+
             selectedGenelocation: null,
             region: {
                 start: 850,
                 end: 1000,
             },
-            markers: [],
-            numMarkers: 0, 
+           
 
         };
 
@@ -37,9 +40,10 @@ class SubRegionMap extends Component {
     }
 
     componentDidUpdate() { 
-        
-
-
+        console.log("YEEE")  
+        if (this.props.markers.length == 0){
+            this.state.geneSelected = false
+        }
         this.drawChart() }
 
     onMouseMove = (event) => {
@@ -58,7 +62,7 @@ class SubRegionMap extends Component {
         const referenceIndex = Math.round(chartScale.invert(xPosition)),
             dataPoint = subRegionData[referenceIndex];
 
-        console.log(dataPoint)
+        
         let tooltipData = {
             'x': event.pageX + 200 > pageWidth ? event.pageX - 200 : event.pageX + 25,
             'y': event.pageY - 50,
@@ -122,6 +126,8 @@ class SubRegionMap extends Component {
         }
         
         this.state.geneSelected = !this.state.geneSelected ;
+
+
        
 
     }
@@ -164,21 +170,22 @@ class SubRegionMap extends Component {
                 Prptindex++ ;
         }
 
-        this.state.markers.push(<div className='geneMarker' key = {xLocation} onMouseOver={()=>this.onMarkerMove(tooltipData)}
+        this.props.markers.push(<div className='geneMarker' key = {xLocation} onMouseOver={()=>this.onMarkerMove(tooltipData)}
         style={{ height: (15) + 'px' , left: (xLocation-10) + 'px'}}>
             
     </div>)
 
-    if (this.state.markers.length>10){
-        this.state.markers.shift();
+    if (this.props.markers.length>10){
+        this.props.markers.shift();
     }
 
     }
 
     eraseMarkers =() => {
-        this.props.actions.showTooltip(true, [])
 
-        this.state.markers.length = 0;
+
+
+        this.props.markers.length = 0;
         let numMarkers = 0;
         this.setState({numMarkers})
 
@@ -227,6 +234,8 @@ class SubRegionMap extends Component {
         this.props.actions.setActiveGenes(_.map(activeGenes, (d) => d.Gene));
         this.setState({ region });
     }
+
+
 
     attachResizing = () => {
 
@@ -413,8 +422,11 @@ class SubRegionMap extends Component {
         let { enableSelectionRegion = false } = this.state;
         let { activeChromosome = '', subGenomes = [], hideChromosome = false } = this.props;
 
+
+
         return (
             <div style={{ 'width': CHART_WIDTH }} className="triad-stack-container">
+
                 <div className='m-b'>
                     <TriadLegend
                         subGenomes={subGenomes} />
@@ -423,37 +435,17 @@ class SubRegionMap extends Component {
                             <button onClick={this.eraseMarkers}>
                                 Erase Markers 
                                 </button>
-                    {/* <span className='switch-container'>
-                        <div className='switch-inner'> */}
-                            {/* <label htmlFor="material-switch-norm"> */}
-                                {/* <Switch
-                                    checked={enableSelectionRegion}
-                                    onChange={this.onToggleRegionWindow}
-                                    onColor="#86d3ff"
-                                    onHandleColor="#2693e6"
-                                    handleDiameter={16}
-                                    uncheckedIcon={false}
-                                    checkedIcon={false}
-                                    boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-                                    activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-                                    height={12}
-                                    width={35}
-                                    className="react-switch"
-                                    id="material-switch-norm" />
-                            </label> */}
-                        {/* </div> */}
-                        {/* <span className='switch-label'>Select Region</span> */}
-                    {/* </span> */}
+
+
+              
                 </div>
-                {/* <div style={{ 'width': CHART_WIDTH }}
-                onMouseOver={this.onMouseMove}
-                onMouseMove={this.onMouseMove}
-                onMouseLeave={this.onMouseLeave}
-                onClick={this.onMouseClick}
-                    className={'gene-finder-wrapper ' + (enableSelectionRegion ? '' : 'hide')}> */}
+               
                     
-                    {this.state.markers}
+
+                    {this.props.markers}
                     
+                    
+
                     <div className='variable-window' id="gene-finder-window"
                         style={{ height: (15) + 'px' }}>
                     </div>
@@ -492,6 +484,8 @@ function getStartAndEnd(target, chartScale) {
         'end': Math.round(chartScale.invert(end))
     };
 }
+
+
 
 
 function mapDispatchToProps(dispatch) {
