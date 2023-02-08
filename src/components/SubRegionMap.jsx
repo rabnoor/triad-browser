@@ -40,7 +40,7 @@ class SubRegionMap extends Component {
     }
 
     componentDidUpdate() { 
-        console.log("YEEE")  
+
         if (this.props.markers.length == 0){
             this.state.geneSelected = false
         }

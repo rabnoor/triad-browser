@@ -32,9 +32,9 @@ export default class TriadLegend extends Component {
         const { subGenomes = [] } = this.props;
 
         return (
-            <div className="legend-container">
-                <canvas className="legend-canvas" width={subGenomes.length * 40} height={subGenomes.length * 15} ref={(el) => { this.canvas = el }} > </canvas>
-            </div>
+
+                <canvas className="legend-canvas" width={subGenomes.length * 40} height={subGenomes.length * 15} style = {{"position": "absolute"}} ref={(el) => { this.canvas = el }} > </canvas>
+
         );
     }
 }

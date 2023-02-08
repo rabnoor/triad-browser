@@ -190,6 +190,7 @@ class ChromosomePage extends Component {
                                     chartScale={chartScale}
                                     chromosomes={chromosomes}
                                     onChromosomeChange={this.onChromosomeChange} 
+                                    isTooltipVisible = {isTooltipVisible}
                                     markers = {this.state.markers}
                                     numMarkers = {this.state.numMarkers}/>
                                 <ChromosomeMap

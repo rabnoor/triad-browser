@@ -52,7 +52,7 @@ class ChromosomeMap extends Component {
     }
 
     componentDidUpdate() {
-        console.log("HERETOOOOO")
+
         this.drawChart() 
     }
 

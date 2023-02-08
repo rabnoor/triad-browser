@@ -162,7 +162,7 @@ export function setGenomeRegion(genomeRegion) {
 }
 
 export function setActiveGenes(activeGenes) {
-    console.log("setting active genes")
+
 
     return ({ type: types.SET_ACTIVE_GENES, activeGenes });
 }

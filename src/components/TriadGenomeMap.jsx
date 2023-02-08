@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { schemeTableau10, scaleLinear } from 'd3';
 import { connect } from 'react-redux';
 
+import { bindActionCreators } from 'redux';
 import { setActiveGenes, showTooltip } from '../redux/actions/actions';
 
 import TriadLegend from './TriadLegend';
@@ -12,13 +13,14 @@ import interact from 'interactjs';
 import { TriadGenomeMap } from '.';
 
 
-export default class TriadStackedMap extends Component {
+class TriadStackedMap extends Component {
 
     
     constructor(props) {
         super(props)
         this.state = {
             chartHeight: CHART_HEIGHT,
+            paddingLeft: 0
             
         };
 
@@ -45,8 +47,11 @@ export default class TriadStackedMap extends Component {
 
     chromosomeClick = (event) => {
         const chromosomeID = event.currentTarget.id.split('-')[1];
+
+        this.props.actions.showTooltip(false)
         this.props.onChromosomeChange(chromosomeID);
         this.props.markers.length = 0;
+
 
 
     }
@@ -75,6 +80,7 @@ export default class TriadStackedMap extends Component {
 
             const scale = CreateScale(chartData, subWidth);
             const padding_from_left = scale(dataIndex);
+            this.state.paddingLeft = padding_from_left;
 
             _.map(dataPoint, (d, stackIndex) => {
                 context.beginPath();
@@ -124,9 +130,10 @@ export default class TriadStackedMap extends Component {
 
     render() {
         const { genomeData = [], chromosomes = [], activeChromosome, subGenomes = [], } = this.props;
-
+        let totWidth = 0;
         const canvasList = _.map(chromosomes, (chrom, chromIndex) => {
             const subWidth = ChartScale(genomeData, chromosomes, chromIndex);
+            totWidth  += this.state.paddingLeft + subWidth;
             return <div
                 key={"canvas-" + chromIndex}
                 id={'chromID-' + chrom}
@@ -141,10 +148,10 @@ export default class TriadStackedMap extends Component {
         });
 
         return (
-            <div className='genomemap-container'>
-                <div className="text-center">
-                    <TriadLegend
-                        subGenomes={subGenomes} />
+            <div  className='genomemap-container'>
+                <div  width={CHART_WIDTH} style={{ "position":"relative", "left":"20"}} className="text-center ">
+                <TriadLegend 
+                    subGenomes={subGenomes} />
                     <h4 className='text-primary chart-title'>Genome</h4>
                 </div>
                 {canvasList}
@@ -154,7 +161,7 @@ export default class TriadStackedMap extends Component {
 }
 
 function ChartScale(genomeData, chromosomes, chromIndex) {
-    return Math.round((genomeData[chromosomes[chromIndex]].length / _.sum(_.map(genomeData, (genome) => genome.length)) * CHART_WIDTH));
+    return Math.floor((genomeData[chromosomes[chromIndex]].length / _.sum(_.map(genomeData, (genome) => genome.length)) * CHART_WIDTH));
 }
 
 function CreateScale(data, width) {
@@ -170,4 +177,4 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-connect(null, mapDispatchToProps)(TriadStackedMap);
+export default connect(null, mapDispatchToProps)(TriadStackedMap);
