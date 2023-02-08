@@ -22,8 +22,7 @@ class SubRegionMap extends Component {
             chartHeight: CHART_HEIGHT,
             enableSelectionRegion: false,
             geneSelected: false,
-
-
+            num: 0,
             selectedGenelocation: null,
             region: {
                 start: 850,
@@ -83,6 +82,7 @@ class SubRegionMap extends Component {
         }
 
         if (!this.state.geneSelected){
+
         actions.showTooltip(true, tooltipData);
 }
     }
@@ -159,6 +159,8 @@ class SubRegionMap extends Component {
     if (this.props.markers.length>10){
         this.props.markers.shift();
     }
+    let num = this.state.num+1
+    this.setState({num})
 
 
     }
@@ -177,7 +179,7 @@ class SubRegionMap extends Component {
 
     drawChart = () => {
 
-        this.state.geneSelected = false ;
+
 
         const { subRegionData = [], subGenomes = [], chartScale } = this.props;
         let context = clearAndGetContext(this.canvas);
@@ -258,6 +260,7 @@ class SubRegionMap extends Component {
                         // Generic code that handles width and position of the window and sets it back onto the dom element
                         var target = event.target;
                         var targetCounterpart = document.getElementById('gene-finder-window2')
+                        console.log(target, targetCounterpart)
                         var x = (parseFloat(target.getAttribute('data-x')) || 0);
                         // update the element's style
                         target.style.width = event.rect.width + 'px';
@@ -269,7 +272,7 @@ class SubRegionMap extends Component {
 
                         targetCounterpart.style.width = event.rect.width + 'px';
                         // translate when resizing from left edges
-                        x += event.deltaRect.left;
+                        // x += event.deltaRect.left;
                         targetCounterpart.style.webkitTransform = targetCounterpart.style.transform =
                             'translate(' + x + 'px,' + '0px)'
                             targetCounterpart.setAttribute('data-x', x);
@@ -336,7 +339,7 @@ class SubRegionMap extends Component {
 
                         targetCounterpart.style.width = event.rect.width + 'px';
                         // translate when resizing from left edges
-                        x += event.deltaRect.left;
+                        // x += event.deltaRect.left;
                         targetCounterpart.style.webkitTransform = targetCounterpart.style.transform =
                             'translate(' + x + 'px,' + '0px)'
                             targetCounterpart.setAttribute('data-x', x);

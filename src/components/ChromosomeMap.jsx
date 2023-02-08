@@ -146,7 +146,7 @@ class ChromosomeMap extends Component {
                         // update the element's style
                         targetCounterpart.style.width = event.rect.width + 'px';
                         // translate when resizing from left edges
-                        x += event.deltaRect.left;
+
                         targetCounterpart.style.webkitTransform = target.style.transform =
                             'translate(' + x + 'px,' + '0px)'
                             targetCounterpart.setAttribute('data-x', x);
@@ -221,7 +221,7 @@ class ChromosomeMap extends Component {
                         // update the element's style
                         targetCounterpart.style.width = event.rect.width + 'px';
                         // translate when resizing from left edges
-                        x += event.deltaRect.left;
+
                         targetCounterpart.style.webkitTransform = target.style.transform =
                             'translate(' + x + 'px,' + '0px)'
                             targetCounterpart.setAttribute('data-x', x);
