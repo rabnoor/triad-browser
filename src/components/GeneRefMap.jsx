@@ -12,9 +12,10 @@ class GeneRefMap extends Component {
     componentDidUpdate() { this.drawChart() }
 
     drawChart = () => {
-        
+        console.log()
 
-        const { geneData = [], activeGenes = [], activeChromosome = '' } = this.props;
+        const { geneData = [], activeGenes = [], hoveredGene  =  [],  activeChromosome = '' } = this.props;
+        console.log(hoveredGene)
 
         let tempData = geneData[activeChromosome.toLocaleLowerCase()] || [];
         // Start drawing the gene map here 
@@ -27,12 +28,15 @@ class GeneRefMap extends Component {
             .range([0, CHART_WIDTH]);
 
         const geneLines = _.map(sortedGeneData, (d, i) => {
+            if (d.gene == hoveredGene[0]){
+                console.log(d.gene)
+            }
             return {
-                'color': activeGenes.indexOf(d.gene) > -1 ? 'white' : schemeTableau10[4],
+                'color':  d.gene == hoveredGene[0] ? 'red' : activeGenes.indexOf(d.gene) > -1 ? 'white' :  schemeTableau10[4],
                 'start': geneChartScale(d.start),
-                'end': activeGenes.indexOf(d.gene) > -1 ? geneChartScale(d.end) + 5 : geneChartScale(d.end),
+                'end': activeGenes.indexOf(d.gene) > -1 ? geneChartScale(d.end) + 5 : hoveredGene.indexOf(d.gene) > -1 ? geneChartScale(d.end)+5 : geneChartScale(d.end),
                 'y': 30,
-                'height': activeGenes.indexOf(d.gene) > -1 ? 75 : 40
+                'height': activeGenes.indexOf(d.gene) > -1 ? 75 :  hoveredGene.indexOf(d.gene) > -1 ? 75 : 40
             };
         });
 
@@ -62,6 +66,7 @@ function mapStateToProps(state) {
     return {
         // fill in with props that you need to read from state
         activeGenes: state.oracle.activeGenes,
+        hoveredGene: state.oracle.hoveredGene,
         activeChromosome: state.oracle.activeChromosome,
         geneData: state.genome.geneData,
     };

@@ -3,6 +3,7 @@ import initialState from './initialState';
 
 // Perils of having a nested tree strucutre in the Redux State XD XD XD 
 export default function oracleReducer(state = initialState.oracle, action) {
+
   switch (action.type) {
     case types.SET_TOOLTIP_VISIBILITY:
       return Object.assign({}, state, { 'isTooltipVisible': action.isTooltipVisible })
@@ -16,6 +17,8 @@ export default function oracleReducer(state = initialState.oracle, action) {
       return Object.assign({}, state, { 'region': { ...action.region } })
     case types.SET_ACTIVE_GENES:
       return Object.assign({}, state, { 'activeGenes': [...action.activeGenes] })
+    case types.SET_HOVERED_GENE:
+      return Object.assign({}, state, { 'hoveredGene': [...action.hoveredGene] })
     case types.SET_GENOME_REGION:
       return Object.assign({}, state, { 'genomeRegion': { ...action.genomeRegion } })
     case types.SET_ROOM_NAME:
@@ -28,3 +31,4 @@ export default function oracleReducer(state = initialState.oracle, action) {
       return state;
   }
 }
+

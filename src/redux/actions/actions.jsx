@@ -9,10 +9,11 @@ export function showTooltip(isTooltipVisible, tooltipData) {
         if (!!tooltipData) {
 
             dispatch({ type: types.SET_TOOLTIP_DATA, tooltipData });
-            // dispatch(setActiveGenes([tooltipData.gene]));
+            // console.log([tooltipData.gene])
+            dispatch(setHoveredGene([tooltipData.gene]));
             dispatch({ type: types.SET_TOOLTIP_VISIBILITY, isTooltipVisible });
         } else {
-
+            dispatch(setHoveredGene([]));
             dispatch({ type: types.SET_TOOLTIP_VISIBILITY, isTooltipVisible });
             // dispatch(setActiveGenes([]));
         }
@@ -168,7 +169,7 @@ export function setRegion(region) {
     let toSet = false
     return dispatch => {
         
-        // dispatch(setActiveGenes([]));
+        dispatch(setActiveGenes([]));
         dispatch(showTooltip(false));
 
         dispatch({ type: types.SET_REGION, region });
@@ -185,6 +186,12 @@ export function setActiveGenes(activeGenes) {
 
 
     return ({ type: types.SET_ACTIVE_GENES, activeGenes });
+}
+
+export function setHoveredGene(hoveredGene) {
+
+
+    return ({ type: types.SET_HOVERED_GENE, hoveredGene });
 }
 
 export function setActiveSubGenome(activeSubGenome) {

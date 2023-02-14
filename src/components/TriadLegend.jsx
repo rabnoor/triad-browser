@@ -33,7 +33,7 @@ export default class TriadLegend extends Component {
 
         return (
 
-                <canvas className="legend-canvas" width={subGenomes.length * 40} height={subGenomes.length * 15} style = {{"position": "absolute"}} ref={(el) => { this.canvas = el }} > </canvas>
+                <canvas className="legend-canvas" width={subGenomes.length * 40} height={40} style = {{"position": "absolute"}} ref={(el) => { this.canvas = el }} > </canvas>
 
         );
     }

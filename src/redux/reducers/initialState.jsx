@@ -17,6 +17,7 @@ export default {
       end: 0,
     },
     activeGenes: [],
+    hoveredGene: [],
     Username: '',
     RoomName: '',
     Connection: false,
